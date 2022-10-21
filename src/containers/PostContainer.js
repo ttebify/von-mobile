@@ -6,7 +6,6 @@ import { WordPressClass } from "../builder/containers/WordPressPostsContainer";
 
 const PostContainer = (Comp, rest = {}) =>
   class extends WordPressClass {
-
     componentDidMount() {
       const { id } = this.props;
 
@@ -40,8 +39,6 @@ const mapStateToProps = (state) => {
     appIndex,
   };
 };
-
-//
 
 export default compose(
   connect(mapStateToProps, { getApi, cancelToken }),

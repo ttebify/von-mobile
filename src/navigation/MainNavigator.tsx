@@ -18,6 +18,7 @@ import DrawerComp from "../components/DrawerComp";
 import BottomTabBar from "../components/ButtomTabBar";
 import RadioScreen from "../screens/RadioScreen";
 import CategoryScreen from "../screens/CategoryScreen";
+import PostScreenHeader from "../components/PostScreenHeader";
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -30,6 +31,7 @@ const drawerViewConfig = {
   drawerLockMode: "locked-closed", //'unlocked' | 'locked-closed' | 'locked-open';
   edgeWidth: 1,
   drawerPosition: "left",
+  id: "DrawerNavigator",
   screenOptions: {
     headerStyle: {
       height: 74,
@@ -86,7 +88,6 @@ const HomeNavigator = () => (
   >
     <Stack.Screen name="HomeScreen" component={HomeScreen} />
     <Stack.Screen name="PostsScreen" component={PostsScreen} />
-    <Stack.Screen name="PostScreen" component={PostScreen} />
   </Stack.Navigator>
 );
 
@@ -105,8 +106,21 @@ export default function MainNavigator() {
   return (
     <Drawer.Navigator initialRouteName="App" {...drawerViewConfig}>
       <Drawer.Screen name="App" component={AppNavigator} />
-      {/* <Drawer.Screen name="Setting" component={SettingsNavigator} /> */}
-      {/* <Drawer.Screen name="Editor" component={Editor} /> */}
+      <Drawer.Screen
+        name="PostScreen"
+        component={PostScreen}
+        options={{
+          header: ({ navigation, route, options }: any) => {
+            return (
+              <PostScreenHeader
+                navigation={navigation}
+                route={route}
+                options={options}
+              />
+            );
+          },
+        }}
+      />
     </Drawer.Navigator>
   );
 }

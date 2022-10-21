@@ -12,7 +12,7 @@ const moment = require("moment");
 class WordPressClass extends React.Component {
   apiId = "posts";
   offset = 0;
-  per_page = 10;
+  per_page = 15;
   search = "";
   orderby = "date";
   order = "desc";
@@ -275,6 +275,7 @@ class WordPressClass extends React.Component {
     const title = dotProp.get(post, "title.rendered", "");
     const content = dotProp.get(post, "content.rendered", "");
     const excerpt = dotProp.get(post, "excerpt.rendered", "");
+    const link = dotProp.get(post, "link", "https://von.gov.ng/");
     const date = dotProp.get(post, "date", new Date());
     const media = dotProp.get(
       post,
@@ -294,6 +295,7 @@ class WordPressClass extends React.Component {
       key: `post-${key}-${id}`,
       id,
       title: purgeHtml(title),
+      link,
       content,
       excerpt: purgeHtml(excerpt),
       date: dateFromNow,
@@ -307,6 +309,7 @@ class WordPressClass extends React.Component {
       title: { rendered: t = "" },
       content: { rendered: c = "" },
       excerpt: { rendered: e = "" },
+      link = "https://von.gov.ng/",
       date = new Date(),
       _embedded = {},
     } = post;
@@ -326,21 +329,11 @@ class WordPressClass extends React.Component {
       full = { source_url: "https://picsum.photos/700" },
     } = media;
 
-    if (this.isEmptyObj(post)) {
-      console.log({
-        key: `post-${key}-${id}`,
-        id,
-        title: purgeHtml(t),
-        content: c,
-        excerpt: purgeHtml(e),
-        date: dateFromNow,
-        media: { thumbnail, medium, full },
-      });
-    }
     return {
       key: `post-${key}-${id}`,
       id,
       title: purgeHtml(t),
+      link,
       content: c,
       excerpt: purgeHtml(e),
       date: dateFromNow,
@@ -440,7 +433,7 @@ const mapStateToProps = (state) => {
 
   return {
     url: state.globalState.url,
-    posts: state.api[`posts-${appIndex}`],
+    posts: state.api[`posts-${appIndex}`].slice(5),
     pages: state.api[`pages-${appIndex}`],
     categories: state.api[`categories-${appIndex}`],
     gState: state.globalState,

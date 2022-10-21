@@ -9,7 +9,7 @@ const HomeContainer = (Comp, rest = {}) =>
   class extends WordPressClass {
     apiId = "posts";
     offset = 0;
-    per_page = 10;
+    per_page = 15;
     //categories=0;
     //author=0;
     search = "";
@@ -49,9 +49,9 @@ const HomeContainer = (Comp, rest = {}) =>
 
     componentWillUnmount() {
       this._isMounted = false;
-      /* if (this.cancelToken) {
+      if (this.cancelToken) {
         this.cancelToken.cancel("ComponenetWillUnmount");
-      } */
+      }
     }
 
     render() {
