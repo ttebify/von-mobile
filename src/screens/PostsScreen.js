@@ -6,7 +6,7 @@ import PostsComp from "../components/PostsComp";
 
 function PostsScreen({ navigation, route }) {
   const isFocused = navigation.isFocused();
-  const categories = route.params?.title ? route.params?.categories : 0;
+  const categories = route.params?.categories ? route.params?.categories : 0;
 
   const args = { navigation, isFocused };
 

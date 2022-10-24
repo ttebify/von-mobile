@@ -4,15 +4,7 @@ import AppbarComp from "../components/AppbarComp";
 import HomeScreen from "../screens/HomeScreen";
 import PostScreen from "../screens/PostScreen";
 import PostsScreen from "../screens/PostsScreen";
-// import PostScreen from "../screens/PostScreen";
-// import PostsScreen from "../screens/PostsScreen";
-// import WpPageScreen from "../screens/WpPageScreen";
-// import WpPageScreen from "../screens/WpPageScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-// import PagesScreen from "../screens/PagesScreen";
-// import ThemeScreen from "../screens/ThemeScreen";
-// import MenusScreen from "../screens/MenusScreen";
-// import SettingsScreen from "../screens/SettingsScreen";
 import VideoScreen from "../screens/VideoScreen";
 import DrawerComp from "../components/DrawerComp";
 import BottomTabBar from "../components/ButtomTabBar";
@@ -34,7 +26,7 @@ const drawerViewConfig = {
   id: "DrawerNavigator",
   screenOptions: {
     headerStyle: {
-      height: 74,
+      height: 64,
       backgroundColor: "rgb(4, 98, 171)",
       display: "flex",
       flexDirection: "row",
@@ -54,19 +46,6 @@ const drawerViewConfig = {
     },
   },
 };
-
-/* const stackConfig = {
-  presentation: "card", //modal| 'card'
-  headerBackTitleVisible: false,
-  headerLayoutPreset: "center",
-  cardOverlayEnabled: false,
-
-  defaultNavigationOptions: ({ navigation }: any) => {
-    return {
-      header: <AppbarComp navigation={navigation} />,
-    };
-  },
-}; */
 
 const AppNavigator = () => (
   <Tab.Navigator
@@ -90,17 +69,6 @@ const HomeNavigator = () => (
     <Stack.Screen name="PostsScreen" component={PostsScreen} />
   </Stack.Navigator>
 );
-
-/* function SettingsNavigator() {
-  return (
-    <Tab.Navigator {...tabConfig}>
-      <Tab.Screen name="Settings" component={SettingsScreen} />
-      <Tab.Screen name="Menus" component={MenusScreen} />
-      <Tab.Screen name="Pages" component={PagesScreen} />
-      <Tab.Screen name="Theme" component={ThemeScreen} />
-    </Tab.Navigator>
-  );
-} */
 
 export default function MainNavigator() {
   return (

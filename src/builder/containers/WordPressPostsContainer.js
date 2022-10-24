@@ -134,7 +134,6 @@ class WordPressClass extends React.Component {
     } = obj;
     let { getApi, url, appIndex } = this.props;
     let apiId = `categories-${appIndex}`;
-    //console.log('static', this);
     return getApi(
       `${url}/wp-json/wp/v2/categories`,
       { per_page, orderby, order, hide_empty },
@@ -145,7 +144,6 @@ class WordPressClass extends React.Component {
   fetchMorePosts(obj = {}) {
     const offset =
       this.props.posts && this.props.posts.offset ? this.props.posts.offset : 0;
-    //console.log('static', this);
     return this.fetchPosts({ offset, ...obj });
   }
 
@@ -156,7 +154,6 @@ class WordPressClass extends React.Component {
 
     //get already fetch posts
     return this.getAvailablePostsId().then((ids) => {
-      //console.log(`getAvailablePostsId (${id.length})`, id.join())
       if (ids.length > 0) {
         obj.exclude = ids.join();
       }
@@ -176,11 +173,9 @@ class WordPressClass extends React.Component {
 
     //get already fetch pages
     return this.getAvailablePagesId().then((ids) => {
-      //console.log(`getAvailablePagesId (${id.length})`, id.join())
       if (ids.length > 0) {
         obj.exclude = ids.join();
       }
-      console.log({ per_page, orderby, order, ...obj, _embed: "" });
       return getApi(
         `${url}/wp-json/wp/v2/pages`,
         { per_page, orderby, order, ...obj, _embed: "" },
@@ -276,12 +271,14 @@ class WordPressClass extends React.Component {
     const content = dotProp.get(post, "content.rendered", "");
     const excerpt = dotProp.get(post, "excerpt.rendered", "");
     const link = dotProp.get(post, "link", "https://von.gov.ng/");
+    const categories = dotProp.get(post, "categories", []);
     const date = dotProp.get(post, "date", new Date());
     const media = dotProp.get(
       post,
       "_embedded.wp:featuredmedia.0.media_details.sizes",
       {}
     );
+    const author = dotProp.get(post, "_embedded.author.0.name", "");
 
     const dateFromNow = moment(date, "YYYY-MM-DD HH:mm:ss").fromNow();
 
@@ -295,8 +292,10 @@ class WordPressClass extends React.Component {
       key: `post-${key}-${id}`,
       id,
       title: purgeHtml(title),
+      author,
       link,
       content,
+      categories,
       excerpt: purgeHtml(excerpt),
       date: dateFromNow,
       media: { thumbnail, medium, full },
@@ -310,6 +309,8 @@ class WordPressClass extends React.Component {
       content: { rendered: c = "" },
       excerpt: { rendered: e = "" },
       link = "https://von.gov.ng/",
+      author = "",
+      categories = [],
       date = new Date(),
       _embedded = {},
     } = post;
@@ -334,6 +335,8 @@ class WordPressClass extends React.Component {
       id,
       title: purgeHtml(t),
       link,
+      author,
+      categories,
       content: c,
       excerpt: purgeHtml(e),
       date: dateFromNow,

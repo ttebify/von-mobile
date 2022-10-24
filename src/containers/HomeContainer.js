@@ -57,9 +57,9 @@ const HomeContainer = (Comp, rest = {}) =>
     render() {
       const { fetchMore } = this;
 
-      const { navigation, appIndex, posts } = this.props;
+      const { navigation, appIndex, posts, categories = [] } = this.props;
 
-      var args = { fetchMore };
+      var args = { fetchMore, categories };
 
       args.posts =
         posts && Array.isArray(posts.data)

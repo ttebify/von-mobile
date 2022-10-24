@@ -48,8 +48,9 @@ const PostsContainer = (Comp, rest = {}) =>
 
     componentWillUnmount() {
       this._isMounted = false;
-
-      //if(this.cancelToken){ this.cancelToken.cancel('ComponenetWillUnmount');}
+      if (this.cancelToken) {
+        this.cancelToken.cancel("ComponenetWillUnmount");
+      }
     }
 
     shouldComponentUpdate(nextProps) {
@@ -140,8 +141,6 @@ const mapStateToProps = (state) => {
   return {
     url: state.globalState.url,
     posts: state.api[`posts-${appIndex}`],
-    //          categories:state.api[`categories-${appIndex}`],
-    //          gState:state.globalState,
     appIndex,
   };
 };

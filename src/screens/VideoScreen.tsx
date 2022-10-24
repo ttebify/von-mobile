@@ -1,10 +1,11 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { Text } from "react-native";
+import FrameBox from "../layouts/FrameBox";
 
 export default function VideoScreen() {
   return (
-    <View>
+    <FrameBox>
       <Text>Video Screen</Text>
-    </View>
+    </FrameBox>
   );
 }
