@@ -16,7 +16,7 @@
     "noUnusedLocals": true /* Enable error reporting when a local variables aren't read. */,
     "noUnusedParameters": true /* Raise an error when a function parameter isn't read */,
     "noImplicitThis": true /* Enable error reporting when `this` is given the type `any`. */,
-    "noImplicitAny": true /* Enable error reporting for expressions and declarations with an implied `any` type.. */,
+    "noImplicitAny": false /* Enable error reporting for expressions and declarations with an implied `any` type.. */,
     "strictNullChecks": true /* When type checking, take into account `null` and `undefined`. */
   },
   // "include": ["src/global.d.ts", "**/*.ts", "**/*.js", "**/*.jsx", "**/*.tsx", "**/*.jpg", "**/*.png", "**/*.svg",],

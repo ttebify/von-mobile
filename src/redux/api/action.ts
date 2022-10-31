@@ -174,6 +174,10 @@ export const getApi = (
       .get(`${url}?${params}`, args)
       .then((res) => {
         id === null || dispatch(fetchApiSuccess(id, res.data));
+        /*  if (id === "videos-0") {
+          console.log(res.data, "Res");
+        } */
+
         return res;
       })
       .catch((error) => {

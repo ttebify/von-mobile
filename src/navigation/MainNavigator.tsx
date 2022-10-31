@@ -11,6 +11,8 @@ import BottomTabBar from "../components/ButtomTabBar";
 import RadioScreen from "../screens/RadioScreen";
 import CategoryScreen from "../screens/CategoryScreen";
 import PostScreenHeader from "../components/PostScreenHeader";
+import VideosScreen from "../screens/VideosScreen";
+import VideoScreenHeader from "../components/VideoScreenHeader";
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -52,9 +54,10 @@ const AppNavigator = () => (
     screenOptions={{ headerShown: false }}
     initialRouteName="HomeScreen"
     tabBar={BottomTabBar}
+    id="tabDrawer"
   >
     <Tab.Screen name="Home" component={HomeNavigator} />
-    <Tab.Screen name="Video" component={VideoScreen} />
+    <Tab.Screen name="Video" component={VideoNavigator} />
     <Tab.Screen name="Radio" component={RadioScreen} />
     <Tab.Screen name="Categories" component={CategoryScreen} />
   </Tab.Navigator>
@@ -70,6 +73,15 @@ const HomeNavigator = () => (
   </Stack.Navigator>
 );
 
+const VideoNavigator = () => (
+  <Stack.Navigator
+    initialRouteName="VideoScreen"
+    screenOptions={{ headerShown: false }}
+  >
+    <Stack.Screen name="VideoScreen" component={VideoScreen} />
+  </Stack.Navigator>
+);
+
 export default function MainNavigator() {
   return (
     <Drawer.Navigator initialRouteName="App" {...drawerViewConfig}>
@@ -81,6 +93,21 @@ export default function MainNavigator() {
           header: ({ navigation, route, options }: any) => {
             return (
               <PostScreenHeader
+                navigation={navigation}
+                route={route}
+                options={options}
+              />
+            );
+          },
+        }}
+      />
+      <Drawer.Screen
+        name="VideosScreen"
+        component={VideosScreen}
+        options={{
+          header: ({ navigation, route, options }: any) => {
+            return (
+              <VideoScreenHeader
                 navigation={navigation}
                 route={route}
                 options={options}

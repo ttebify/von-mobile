@@ -23,7 +23,6 @@ class WordPressClass extends React.Component {
 
     this.state = {};
 
-    //desc, asc |author, date, id, include, modified, parent, relevance, slug, title
     this.fetchMorePosts = this.fetchMorePosts.bind(this);
   }
 
@@ -147,41 +146,38 @@ class WordPressClass extends React.Component {
     return this.fetchPosts({ offset, ...obj });
   }
 
-  fetchPosts(obj = {}) {
+  async fetchPosts(obj = {}) {
     let { per_page, orderby, order } = this;
     let { getApi, url, appIndex } = this.props;
     let apiId = `posts-${appIndex}`;
 
     //get already fetch posts
-    return this.getAvailablePostsId().then((ids) => {
-      if (ids.length > 0) {
-        obj.exclude = ids.join();
-      }
-      console.log({ per_page, orderby, order, ...obj, _embed: "" });
-      return getApi(
-        `${url}/wp-json/wp/v2/posts`,
-        { per_page, orderby, order, ...obj, _embed: "" },
-        apiId
-      );
-    });
+    const ids = await this.getAvailablePostsId();
+    if (ids.length > 0) {
+      obj.exclude = ids.join();
+    }
+    return getApi(
+      `${url}/wp-json/wp/v2/posts`,
+      { per_page, orderby, order, ...obj, _embed: "" },
+      apiId
+    );
   }
 
-  fetchPages(obj = {}) {
+  async fetchPages(obj = {}) {
     let { per_page, orderby, order } = this;
     let { getApi, url, appIndex } = this.props;
     let apiId = `pages-${appIndex}`;
 
     //get already fetch pages
-    return this.getAvailablePagesId().then((ids) => {
-      if (ids.length > 0) {
-        obj.exclude = ids.join();
-      }
-      return getApi(
-        `${url}/wp-json/wp/v2/pages`,
-        { per_page, orderby, order, ...obj, _embed: "" },
-        apiId
-      );
-    });
+    const ids = await this.getAvailablePagesId();
+    if (ids.length > 0) {
+      obj.exclude = ids.join();
+    }
+    return getApi(
+      `${url}/wp-json/wp/v2/pages`,
+      { per_page, orderby, order, ...obj, _embed: "" },
+      apiId
+    );
   }
 
   getCategories() {
@@ -226,18 +222,16 @@ class WordPressClass extends React.Component {
 
       this.getCategories().then((data) => {
         const fetchPostsIter = (categoryObj) => {
-          return new Promise((resolve) => {
+          return new Promise(async (resolve) => {
             let categories = categoryObj.id;
 
-            return this.fetchPosts({ categories }).then((res) => {
-              console.log(`Home ${index} done fetching: `, categoryObj.id);
-              if (res.data) {
-                console.log(res.data.length);
-              }
-              index++;
-
-              resolve(res);
-            });
+            const res = await this.fetchPosts({ categories });
+            console.log(`Home ${index} done fetching: `, categoryObj.id);
+            if (res.data) {
+              console.log(res.data.length);
+            }
+            index++;
+            resolve(res);
           });
         };
 

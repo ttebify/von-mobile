@@ -102,8 +102,6 @@ const PostsContainer = (Comp, rest = {}) =>
 
       const args = { fetchMore };
 
-      //this.init();
-
       if (posts) {
         //args.posts = posts;
         const { data = [] } = posts;

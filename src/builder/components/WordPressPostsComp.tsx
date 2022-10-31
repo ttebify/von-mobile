@@ -1,20 +1,21 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Animated,
   Dimensions,
+  Image,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
 } from "react-native";
-import { Text, Card, Paragraph } from "react-native-paper";
+import { Text, Card, Paragraph, Button } from "react-native-paper";
 import HomeContainer from "../../containers/HomeContainer";
 import { width } from "../../layouts/dimensions";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import { LinearGradient } from "expo-linear-gradient";
 import LoadingComp from "../../components/LoadingComp";
 import FrameBox from "../../layouts/FrameBox";
-import { Row } from "../../layouts/FlexBox";
+import { Box, Row } from "../../layouts/FlexBox";
 
 export type Categories =
   | "sports"
@@ -111,7 +112,7 @@ export const WordPressCardSlide = ({ posts, navigation }) => {
               flexDirection: "row",
             }}
           >
-            <Paragraph style={styles.heroSmallText}>Nnenna Okoronkwo</Paragraph>
+            <Paragraph style={styles.heroSmallText}>{post.author}</Paragraph>
             <Paragraph style={[styles.heroSmallText, { marginLeft: 10 }]}>
               {post.date}
             </Paragraph>
@@ -155,6 +156,12 @@ export const WordPressCardSlide = ({ posts, navigation }) => {
         {showPosts}
       </ScrollView>
       <View style={styles.barContainer}>{barArray}</View>
+      <Image
+        source={{
+          uri: "https://von.gov.ng/wp-content/uploads/2022/10/media-literacy-week-scaled.jpg",
+        }}
+        style={{ width, height: 62, marginVertical: 8 }}
+      />
     </View>
   );
 };
@@ -196,7 +203,7 @@ export const WordPressThumbnailList = ({ posts, navigation, categories }) => {
             <View>
               {cats.map((c: any) => (
                 <Text key={c.id} style={{ color: "rgba(4, 146, 220, 1)" }}>
-                  #{c.name}
+                  {c.name}
                 </Text>
               ))}
             </View>
@@ -234,7 +241,7 @@ export const WordPressThumbnailList = ({ posts, navigation, categories }) => {
 
   if (posts.length === 0) {
     return (
-      <FrameBox>
+      <FrameBox style={{ marginTop: 20 }}>
         <LoadingComp />
       </FrameBox>
     );
@@ -265,7 +272,7 @@ export const WordPressCard = ({
 
     return (
       <Card
-        key={post.key}
+        key={post.id}
         onPress={() =>
           navigate("PostScreen", { title: post.title, id: post.id })
         }
@@ -291,6 +298,7 @@ export const WordPressCard = ({
                   paddingVertical: 2,
                   paddingHorizontal: 10,
                   borderRadius: 3,
+                  marginRight: 4,
                 }}
               >
                 <Text
@@ -314,10 +322,16 @@ export const WordPressCard = ({
   return <View>{showPosts}</View>;
 };
 
-const TestingAllComp = ({ posts, navigation, categories }) => {
+const TestingAllComp = ({
+  posts,
+  navigation,
+  categories,
+  fetchMoreByCategory,
+  isFetching: fetchingPosts,
+}) => {
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: "TopStory", title: "Top Stories" },
+    { key: "Latest", title: "Latests" },
     { key: "Nigeria", title: "Nigeria" },
     { key: "Africa", title: "Africa" },
     { key: "World", title: "World" },
@@ -326,12 +340,25 @@ const TestingAllComp = ({ posts, navigation, categories }) => {
     { key: "Live", title: "Live" },
   ]);
 
+  useEffect(() => {
+    const unsubscribe = navigation
+      .getParent()
+      .addListener("tabPress", (e: { target: string }) => {
+        // Prevent default behavior
+        if (e.target.startsWith("Home")) {
+          setIndex(0);
+        }
+      });
+
+    return unsubscribe;
+  }, [navigation]);
+
   const args = { posts, navigation, categories, offset: 5 };
   const initialLayout = {
     width: Dimensions.get("window").width,
   };
 
-  const TopStoryRoute = () =>
+  const LatestRoute = () =>
     useMemo(
       () => (
         <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
@@ -366,7 +393,34 @@ const TestingAllComp = ({ posts, navigation, categories }) => {
     if (filteredPost.length === 0) {
       return (
         <FrameBox>
-          <Text>No news</Text>
+          {fetchingPosts ? (
+            <Text>Please wait...</Text>
+          ) : (
+            <Text>Nothing to show</Text>
+          )}
+          <Box
+            style={{ pMarginLeft: 30, pMarginRight: 30, marginVertical: 10 }}
+          >
+            {fetchingPosts ? (
+              <LoadingComp />
+            ) : (
+              <Box
+                style={{
+                  pMarginLeft: 30,
+                  pMarginRight: 30,
+                  marginVertical: 10,
+                }}
+              >
+                <Button
+                  icon="refresh"
+                  mode="text"
+                  onPress={() => fetchMoreByCategory(selectedCat.id)}
+                >
+                  Load More
+                </Button>
+              </Box>
+            )}
+          </Box>
         </FrameBox>
       );
     }
@@ -397,6 +451,27 @@ const TestingAllComp = ({ posts, navigation, categories }) => {
             </Card.Content>
           </Card>
         ))}
+        <Box style={{ pMarginLeft: 30, pMarginRight: 30, marginVertical: 10 }}>
+          {fetchingPosts ? (
+            <LoadingComp />
+          ) : (
+            <Box
+              style={{
+                pMarginLeft: 30,
+                pMarginRight: 30,
+                marginVertical: 10,
+              }}
+            >
+              <Button
+                icon="refresh"
+                mode="text"
+                onPress={() => fetchMoreByCategory(selectedCat.id)}
+              >
+                Load More
+              </Button>
+            </Box>
+          )}
+        </Box>
       </ScrollView>
     );
   };
@@ -414,7 +489,7 @@ const TestingAllComp = ({ posts, navigation, categories }) => {
   const renderScene = useMemo(
     () =>
       SceneMap({
-        TopStory: TopStoryRoute,
+        Latest: LatestRoute,
         Nigeria: NigeriaRoute,
         Africa: AfricaRoute,
         World: WorldRoute,
@@ -422,7 +497,7 @@ const TestingAllComp = ({ posts, navigation, categories }) => {
         SpacialDayEvents: SpacialDayEventsRoute,
         Live: LiveRoute,
       }),
-    [TopStoryRoute]
+    [LatestRoute]
   );
 
   const _renderTabBar = (props) => (
@@ -433,7 +508,7 @@ const TestingAllComp = ({ posts, navigation, categories }) => {
       activeColor="rgba(0, 0, 0, 0.87)"
       inactiveColor="rgba(0, 0, 0, 0.69)"
       labelStyle={{ textTransform: "capitalize" }}
-      tabStyle={{ width: 100 }}
+      tabStyle={{ width: 80 }}
       scrollEnabled
     />
   );
@@ -452,12 +527,6 @@ const TestingAllComp = ({ posts, navigation, categories }) => {
 };
 
 export default HomeContainer(TestingAllComp);
-
-export const PostsRegister = [
-  { name: "Thumbnail List", comp: WordPressThumbnailList },
-  { name: "Card", comp: WordPressCard },
-  { name: "Card Slide", comp: WordPressCardSlide },
-];
 
 const styles = StyleSheet.create({
   cardHeading: {
@@ -484,7 +553,7 @@ const styles = StyleSheet.create({
   barContainer: {
     position: "absolute",
     zIndex: 2,
-    bottom: 25,
+    bottom: 100,
     flexDirection: "row",
   },
   track: {

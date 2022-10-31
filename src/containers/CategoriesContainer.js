@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-//import PropTypes from 'prop-types';
 import { compose } from "redux";
 import { connect } from "react-redux";
 
@@ -10,7 +9,6 @@ const CategoriesContainer = (Comp, rest = {}) =>
     offset = 0;
     per_page = 50;
     categories = 0;
-    //author=0;
     search = "";
     orderby = "count";
     order = "desc";
@@ -22,7 +20,6 @@ const CategoriesContainer = (Comp, rest = {}) =>
 
       this.state = {};
 
-      //desc, asc |author, date, id, include, modified, parent, relevance, slug, title
       //this.fetchMore = this.fetchMore.bind(this);
     }
 
@@ -33,7 +30,7 @@ const CategoriesContainer = (Comp, rest = {}) =>
         `${url}/wp-json/wp/v2/categories`,
         { per_page, orderby, order, hide_empty },
         "categories"
-      )
+      );
     }
 
     UNSAFE_componentWillMount() {
@@ -60,12 +57,15 @@ const CategoriesContainer = (Comp, rest = {}) =>
     }
 
     render() {
-      
       const { navigation } = this.props;
 
       var categories = this.props.categories ? this.props.categories.data : [];
+      const isFetching = this.props.categories
+        ? this.props.categories.isFetching
+        : true;
+      const posts = this.props.posts ? this.props.posts.data : [];
 
-      const args = { categories };
+      const args = { categories, posts, isFetching };
 
       if (navigation) {
         args.navigation = navigation;
@@ -75,11 +75,14 @@ const CategoriesContainer = (Comp, rest = {}) =>
     }
   };
 
-const mapStateToProps = (state) => ({
-  url: state.globalState.url,
-  categories: state.api.categories,
-  api: state.api,
-});
+const mapStateToProps = (state) => {
+  const appIndex = state.globalState.currentApp || 0;
+  return {
+    categories: state.api[`categories-${appIndex}`],
+    posts: state.api[`categories-${appIndex}`],
+    url: state.globalState.url,
+  };
+};
 
 export default compose(
   connect(mapStateToProps, { getApi, cancelToken }),

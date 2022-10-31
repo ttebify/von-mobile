@@ -1,29 +1,18 @@
-import React, { useCallback } from "react";
-import { Share, StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import { Appbar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { WordPressClass } from "../builder/containers/WordPressPostsContainer";
-import { cancelToken, getApi } from "../redux/api/action";
 import MainMenu from "./MainMenuComp";
 
-const PostScreenHeader = ({ navigation, title, link, options }: any) => {
-  const _handleShare = useCallback(async () => {
-    const template = `${title} ${link}`;
+const PostScreenHeader = ({ navigation, /* title, link, */ options }: any) => {
+  const [saved, setSaved] = useState(false);
 
-    console.log(link);
-
-    try {
-      await Share.share({
-        message: template,
-        url: link,
-        title: title,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  }, [title]);
+  const _bookMarkPost = () => {
+    setSaved((p) => !p);
+  };
 
   return (
     <SafeAreaView>
@@ -46,8 +35,8 @@ const PostScreenHeader = ({ navigation, title, link, options }: any) => {
         </View>
 
         <Appbar.Action
-          icon="share-variant"
-          onPress={_handleShare}
+          icon={saved ? "bookmark" : "bookmark-outline"}
+          onPress={_bookMarkPost}
           color="white"
         />
       </View>
@@ -97,10 +86,7 @@ const mapStateToProps = (state: any) => {
   };
 };
 
-const Post = compose<React.FC<any>>(
-  connect(mapStateToProps, { getApi, cancelToken }),
-  HeaderContainer
-);
+const Post = compose<React.FC<any>>(connect(mapStateToProps), HeaderContainer);
 export default Post(PostScreenHeader);
 
 const styles = StyleSheet.create({

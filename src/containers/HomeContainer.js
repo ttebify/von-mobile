@@ -10,8 +10,6 @@ const HomeContainer = (Comp, rest = {}) =>
     apiId = "posts";
     offset = 0;
     per_page = 15;
-    //categories=0;
-    //author=0;
     search = "";
     orderby = "date";
     order = "desc";
@@ -21,6 +19,7 @@ const HomeContainer = (Comp, rest = {}) =>
       super(props, { per_page: 1 });
 
       this.state = {};
+      this.fetchMoreByCategory = this.fetchMoreByCategory.bind(this);
     }
 
     UNSAFE_componentWillMount() {
@@ -54,13 +53,16 @@ const HomeContainer = (Comp, rest = {}) =>
       }
     }
 
+    fetchMoreByCategory(cat) {
+      this.fetchPosts({ categories: cat });
+    }
+
     render() {
-      const { fetchMore } = this;
+      const { fetchMoreByCategory } = this;
 
       const { navigation, appIndex, posts, categories = [] } = this.props;
 
-      var args = { fetchMore, categories };
-
+      var args = { fetchMoreByCategory, categories };
       args.posts =
         posts && Array.isArray(posts.data)
           ? this.preparePosts(posts.data, appIndex)
@@ -68,6 +70,9 @@ const HomeContainer = (Comp, rest = {}) =>
 
       if (navigation) {
         args.navigation = navigation;
+      }
+      if (posts) {
+        args.isFetching = posts.isFetching;
       }
 
       return <Comp {...args} />;
