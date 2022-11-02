@@ -1,15 +1,18 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { Appbar, Avatar } from "react-native-paper";
+import { Appbar, Avatar, Menu, Provider } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FrameBox from "../layouts/FrameBox";
-import MainMenu from "./MainMenuComp";
 
 const AppbarComp = ({ navigation, route, options }: any) => {
-  const title = route.params?.title ? route.params?.title : "Voice of Nigeria";
-  const _handleSearch = () => console.log("Searching");
+  const [visible, setVisible] = React.useState(true);
 
-  const _handleMore = () => console.log("Shown more");
+  const title = route.params?.title ? route.params?.title : "Voice of Nigeria";
+  const { navigate } = navigation;
+
+  const openMenu = () => setVisible(true);
+
+  const closeMenu = () => setVisible(false);
 
   return (
     <SafeAreaView>
@@ -19,7 +22,7 @@ const AppbarComp = ({ navigation, route, options }: any) => {
           onPress={() => navigation.toggleDrawer()}
           color="white"
         />
-        <View>
+        <View style={{ width: "70%" }}>
           <FrameBox style={{ flexDirection: "row" }}>
             <Avatar.Image
               size={30}
@@ -30,23 +33,72 @@ const AppbarComp = ({ navigation, route, options }: any) => {
             </View>
           </FrameBox>
         </View>
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Appbar.Action icon="magnify" onPress={_handleSearch} color="white" />
-          <Appbar.Action
-            icon="dots-vertical"
-            onPress={_handleMore}
-            color="white"
-          />
-        </View>
+        <Provider>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "flex-end",
+              alignItems: "center",
+            }}
+          >
+            <Menu
+              visible={visible}
+              onDismiss={closeMenu}
+              anchor={
+                <View
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    alignItems: "center",
+                  }}
+                >
+                  <Appbar.Action
+                    icon="magnify"
+                    onPress={() => navigate("SearchScreen")}
+                    color="white"
+                  />
+                  <Appbar.Action
+                    icon="dots-vertical"
+                    onPress={openMenu}
+                    color="white"
+                  />
+                </View>
+              }
+            >
+              <Menu.Item
+                onPress={() => {
+                  closeMenu();
+                  navigate("BookmarkScreen");
+                }}
+                title="My News"
+              />
+              <Menu.Item
+                onPress={() => {
+                  closeMenu();
+                  // navigate("SettingsScreen");
+                }}
+                title="Settings"
+              />
+              <Menu.Item
+                onPress={() => {
+                  closeMenu();
+                  // navigate("SettingsScreen");
+                }}
+                title="Help"
+              />
+              <Menu.Item
+                onPress={() => {
+                  closeMenu();
+                  // navigate("SettingsScreen");
+                }}
+                title="Contact Us"
+              />
+            </Menu>
+          </View>
+        </Provider>
       </View>
-      <MainMenu navigation={navigation} />
     </SafeAreaView>
   );
 };

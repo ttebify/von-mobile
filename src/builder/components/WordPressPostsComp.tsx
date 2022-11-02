@@ -156,22 +156,33 @@ export const WordPressCardSlide = ({ posts, navigation }) => {
         {showPosts}
       </ScrollView>
       <View style={styles.barContainer}>{barArray}</View>
-      <Image
-        source={{
-          uri: "https://von.gov.ng/wp-content/uploads/2022/10/media-literacy-week-scaled.jpg",
-        }}
-        style={{ width, height: 62, marginVertical: 8 }}
-      />
+      {posts.length > 0 && (
+        <Image
+          source={{
+            uri: "https://von.gov.ng/wp-content/uploads/2022/10/media-literacy-week-scaled.jpg",
+          }}
+          style={{ width, height: 62, marginVertical: 8 }}
+        />
+      )}
     </View>
   );
 };
 
-export const WordPressThumbnailList = ({ posts, navigation, categories }) => {
+export const WordPressThumbnailList = ({
+  posts,
+  navigation,
+  categories,
+  offset = 0,
+}) => {
   const { navigate } = navigation;
 
   const { data } = categories;
+  const slice = (data: any[]) => {
+    if (offset === 0) return data;
+    else return data.slice(11);
+  };
 
-  const showPosts = posts.slice(11).map((post: any) => {
+  const showPosts = slice(posts).map((post: any) => {
     const cats = data.filter(
       (cat: { parent: number; name: string; id: number }) =>
         cat.parent === 0 && post.categories.includes(cat.id)
@@ -337,7 +348,6 @@ const TestingAllComp = ({
     { key: "World", title: "World" },
     { key: "Sports", title: "Sports" },
     { key: "SpacialDayEvents", title: "Events" },
-    { key: "Live", title: "Live" },
   ]);
 
   useEffect(() => {
@@ -373,7 +383,7 @@ const TestingAllComp = ({
   const CategoryView = ({ catName }: { catName: Categories }) => {
     const { isFetching, data } = categories;
 
-    if (isFetching || data.length === 0) {
+    if (isFetching || !data || data.length === 0) {
       return (
         <FrameBox>
           <LoadingComp />
@@ -396,7 +406,7 @@ const TestingAllComp = ({
           {fetchingPosts ? (
             <Text>Please wait...</Text>
           ) : (
-            <Text>Nothing to show</Text>
+            <Text>Try to reload</Text>
           )}
           <Box
             style={{ pMarginLeft: 30, pMarginRight: 30, marginVertical: 10 }}
@@ -416,7 +426,7 @@ const TestingAllComp = ({
                   mode="text"
                   onPress={() => fetchMoreByCategory(selectedCat.id)}
                 >
-                  Load More
+                  Reload
                 </Button>
               </Box>
             )}
@@ -480,11 +490,6 @@ const TestingAllComp = ({
   const WorldRoute = () => <CategoryView catName="world" />;
   const SportsRoute = () => <CategoryView catName="sports" />;
   const SpacialDayEventsRoute = () => <CategoryView catName="special event" />;
-  const LiveRoute = () => (
-    <FrameBox>
-      <Text>Live</Text>
-    </FrameBox>
-  );
 
   const renderScene = useMemo(
     () =>
@@ -495,7 +500,6 @@ const TestingAllComp = ({
         World: WorldRoute,
         Sports: SportsRoute,
         SpacialDayEvents: SpacialDayEventsRoute,
-        Live: LiveRoute,
       }),
     [LatestRoute]
   );

@@ -17,9 +17,12 @@ function VideoScreen({ videos, isFetching, navigation }: any) {
   const { navigate } = navigation;
 
   if (typeof isFetching === "undefined" || isFetching) {
-    <FrameBox>
-      <LoadingComp />
-    </FrameBox>;
+    return (
+      <FrameBox>
+        <LoadingComp />
+        <Text>Loading Playlists</Text>
+      </FrameBox>
+    );
   } else if (videos.length === 0) {
     return (
       <FrameBox>
@@ -37,7 +40,7 @@ function VideoScreen({ videos, isFetching, navigation }: any) {
           <View
             key={item.key}
             style={{
-              height: 300,
+              height: 200,
               width: "96%",
               marginHorizontal: "2%",
               marginVertical: 10,
@@ -46,13 +49,12 @@ function VideoScreen({ videos, isFetching, navigation }: any) {
             }}
           >
             <Card.Cover
-              source={{ uri: item.media.medium.url }}
+              source={{ uri: item.media.standard.url }}
               style={{ flex: 1 }}
             />
-
             <LinearGradient
               colors={["rgba(0, 0, 0, 0)", "rgba(0, 0, 0, 0.67)"]}
-              locations={[0, 0.6]}
+              locations={[0, 0.8]}
               style={{
                 position: "absolute",
                 top: 0,

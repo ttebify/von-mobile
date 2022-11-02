@@ -30,7 +30,7 @@ const CategoryThumbnailList = ({ posts, navigation, categories }: any) => {
         }}
         onPress={() =>
           navigate("PostsScreen", {
-            title: post.title,
+            title: category.name,
             categories: category.id,
           })
         }
@@ -93,6 +93,7 @@ function CategoryScreen({ categories, posts, isFetching, navigation }: any) {
       {isFetching || posts.length === 0 ? (
         <FrameBox style={{ marginTop: 20 }}>
           <LoadingComp />
+          <Text>Please wait...</Text>
         </FrameBox>
       ) : (
         <CategoryThumbnailList {...args} />

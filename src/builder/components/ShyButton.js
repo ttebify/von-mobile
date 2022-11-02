@@ -1,48 +1,43 @@
-import React from 'react';
-import {Button} from 'react-native-paper';
-import {View} from 'react-native';
-
+import React from "react";
+import { Button } from "react-native-paper";
+import { View } from "react-native";
 
 export default class ShyButton extends React.Component {
+  constructor(props) {
+    super(props);
 
-    constructor(props){
+    this.state = {
+      visible: true,
+    };
 
-        super(props);
+    this.handlePress = this.handlePress.bind(this);
+  }
 
-        this.state = {
-            visible: true
-        }
+  handlePress(action) {
+    this.setState({ visible: false });
 
-        this.handlePress = this.handlePress.bind(this);
+    if (action) {
+      action();
+    }
+  }
+
+  render() {
+    const { children, onPress, ...rest } = this.props;
+
+    const { visible } = this.state;
+
+    if (!visible) {
+      return <View />;
     }
 
-    handlePress(action){
-
-        this.setState({visible:false})
-
-        if(action){
-            action();
-        }
-
+    if (children) {
+      return (
+        <Button {...rest} onPress={() => this.handlePress(onPress)}>
+          {children}
+        </Button>
+      );
+    } else {
+      return <Button {...rest} onPress={() => this.handlePress(onPress)} />;
     }
-
-    render(){
-
-        const {children, onPress, ...rest} = this.props;
-
-        const {visible} = this.state;
-
-        if(!visible){
-            return <View />;
-        }
-
-        if(children){
-            return (<Button {...rest} onPress={()=>this.handlePress(onPress)}>
-                {children}
-            </Button>);
-        }else{
-            return <Button {...rest} onPress={()=>this.handlePress(onPress)} />            
-        }
-
-    }
+  }
 }

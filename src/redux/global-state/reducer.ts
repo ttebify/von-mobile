@@ -1,4 +1,8 @@
-import { SET_GLOBAL_STATE, CLEAR_GLOBAL_STATE } from "./action";
+import {
+  SET_GLOBAL_STATE,
+  CLEAR_GLOBAL_STATE,
+  ENTER_SEARCH_TERM,
+} from "./action";
 
 export const initialGlobalState = {
   url: "https://von.gov.ng",
@@ -20,6 +24,7 @@ export const initialGlobalState = {
     custom_menu: [],
   },
   apps: [],
+  search: "",
 };
 
 const reducer = (
@@ -30,6 +35,9 @@ const reducer = (
 
   switch (type) {
     case SET_GLOBAL_STATE:
+      return { ...state, ...obj };
+
+    case ENTER_SEARCH_TERM:
       return { ...state, ...obj };
 
     case CLEAR_GLOBAL_STATE:

@@ -7,7 +7,7 @@ import MainMenu from "./MainMenuComp";
 const VideoScreenHeader = ({ navigation, options }: any) => {
   return (
     <SafeAreaView>
-      <View style={[options.headerStyle, { height: 50 }]}>
+      <View style={options.headerStyle}>
         <View
           style={{
             display: "flex",

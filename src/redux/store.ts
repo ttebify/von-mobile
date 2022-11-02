@@ -7,7 +7,7 @@ import { persistStore, persistReducer } from "redux-persist";
 const persistConfig = {
   key: "root",
   storage: AsyncStorage,
-  whitelist: ["posts-0"],
+  whitelist: ["posts-0", "offlineData"],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -8,7 +8,7 @@ function PostsScreen({ navigation, route }) {
   const isFocused = navigation.isFocused();
   const categories = route.params?.categories ? route.params?.categories : 0;
 
-  const args = { navigation, isFocused };
+  const args = { navigation, isFocused, categoryName: route.params.title };
 
   if (categories > 0) {
     args.categories = categories;

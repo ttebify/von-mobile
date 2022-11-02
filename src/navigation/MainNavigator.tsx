@@ -13,6 +13,10 @@ import CategoryScreen from "../screens/CategoryScreen";
 import PostScreenHeader from "../components/PostScreenHeader";
 import VideosScreen from "../screens/VideosScreen";
 import VideoScreenHeader from "../components/VideoScreenHeader";
+import BookmarkScreen from "../screens/BookmarkScreen";
+import BookmarkScreenHeader from "../components/BookmarkScreenHeader";
+import SearchScreen from "../screens/SearchScreen";
+import SearchScreenHeader from "../components/SearchScreenHeader";
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -36,11 +40,7 @@ const drawerViewConfig = {
       alignItems: "center",
       margin: 0,
     },
-    tabBarStyle: [
-      {
-        display: "flex",
-      },
-    ],
+
     header: ({ navigation, route, options }: any) => {
       return (
         <AppbarComp navigation={navigation} route={route} options={options} />
@@ -112,6 +112,28 @@ export default function MainNavigator() {
                 route={route}
                 options={options}
               />
+            );
+          },
+        }}
+      />
+      <Drawer.Screen
+        name="BookmarkScreen"
+        component={BookmarkScreen}
+        options={{
+          header: ({ navigation, options }: any) => {
+            return (
+              <BookmarkScreenHeader navigation={navigation} options={options} />
+            );
+          },
+        }}
+      />
+      <Drawer.Screen
+        name="SearchScreen"
+        component={SearchScreen}
+        options={{
+          header: ({ navigation, options }: any) => {
+            return (
+              <SearchScreenHeader navigation={navigation} options={options} />
             );
           },
         }}

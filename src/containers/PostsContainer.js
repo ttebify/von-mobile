@@ -2,16 +2,15 @@ import React, { Component } from "react";
 //import PropTypes from 'prop-types';
 import { compose } from "redux";
 import { connect } from "react-redux";
-
 import { getApi, cancelToken } from "../redux/api/action";
-
 import { WordPressClass } from "../builder/containers/WordPressPostsContainer";
+import { enterSearch } from "../redux/global-state/action";
 
 const PostsContainer = (Comp, rest = {}) =>
   class extends WordPressClass {
     apiId = !!rest.id ? rest.id : "posts";
     offset = 0;
-    per_page = 10;
+    per_page = 15;
     //categories=0;
     //author=0;
     search = "";
@@ -98,9 +97,9 @@ const PostsContainer = (Comp, rest = {}) =>
     render() {
       const { fetchMore } = this;
 
-      const { navigation, posts, categories, appIndex } = this.props;
+      const { navigation, posts, categories, appIndex, ...rest } = this.props;
 
-      const args = { fetchMore };
+      const args = { fetchMore, ...rest };
 
       if (posts) {
         //args.posts = posts;
@@ -139,11 +138,13 @@ const mapStateToProps = (state) => {
   return {
     url: state.globalState.url,
     posts: state.api[`posts-${appIndex}`],
+    categories: state.api[`categories-${appIndex}`],
+    searchTerm: state.globalState.search,
     appIndex,
   };
 };
 
 export default compose(
-  connect(mapStateToProps, { getApi, cancelToken }),
+  connect(mapStateToProps, { getApi, cancelToken, enterSearch }),
   PostsContainer
 );

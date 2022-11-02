@@ -4,6 +4,8 @@ import { default as Box } from "../layouts/ResponsiveBox";
 import { Button } from "react-native-paper";
 import Loading from "./LoadingComp";
 import { WordPressCard } from "../builder/components/WordPressPostsComp";
+import { Row } from "../layouts/FlexBox";
+import { Text } from "react-native";
 
 const Posts = ({
   posts = [],
@@ -11,6 +13,7 @@ const Posts = ({
   isFetching,
   navigation,
   categories,
+  categoryName,
 }: any) => {
   const args = {
     posts,
@@ -24,11 +27,17 @@ const Posts = ({
     <Box>
       <WordPressCard {...args} />
       {isFetching ? (
-        <Loading />
+        <Row style={{ justifyContent: "center", paddingVertical: 10 }}>
+          <Loading />
+          <Text> Fetching news in {categoryName.toLowerCase()}</Text>
+        </Row>
       ) : (
-        <Box style={{ pMarginLeft: 30, pMarginRight: 30, marginVertical: 10 }}>
+        <Box style={{ marginVertical: 10 }}>
+          <Text style={{ textAlign: "center" }}>
+            Nothing to show, try to load more content
+          </Text>
           <Button icon="refresh" mode="text" onPress={() => fetchMore()}>
-            More
+            Reload
           </Button>
         </Box>
       )}

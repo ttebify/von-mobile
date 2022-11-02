@@ -6,6 +6,11 @@ import { WordPressClass } from "../builder/containers/WordPressPostsContainer";
 
 const PostContainer = (Comp, rest = {}) =>
   class extends WordPressClass {
+    constructor(props) {
+      super(props);
+      this.fetchPostsByCategory = this.fetchPostsByCategory.bind(this);
+    }
+
     componentDidMount() {
       const { id } = this.props;
 
@@ -18,13 +23,28 @@ const PostContainer = (Comp, rest = {}) =>
     }
 
     render() {
-      const { id } = this.props;
+      const { id, posts, appIndex, ...rest } = this.props;
 
       const data = this.getSinglePost({ id });
 
       const post = data ? this.preparePost(data) : {};
 
-      var args = { id, post };
+      var args = {
+        id,
+        post,
+        posts,
+        fetchPostsByCategory: this.fetchPostsByCategory,
+        ...rest,
+      };
+
+      if (posts) {
+        const { data = [] } = posts;
+
+        //prepare post for render
+        args.posts = Array.isArray(data)
+          ? this.preparePosts(data, appIndex)
+          : [];
+      }
 
       return <Comp {...args} />;
     }

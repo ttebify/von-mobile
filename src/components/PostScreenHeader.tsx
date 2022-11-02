@@ -1,22 +1,36 @@
-import React, { useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Appbar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { WordPressClass } from "../builder/containers/WordPressPostsContainer";
-import MainMenu from "./MainMenuComp";
+import {
+  addToBookmark,
+  removeFromBookmark,
+} from "../redux/offline-state/action";
 
-const PostScreenHeader = ({ navigation, /* title, link, */ options }: any) => {
-  const [saved, setSaved] = useState(false);
+const PostScreenHeader = ({
+  navigation,
+  offlinePosts,
+  id,
+  options,
+  removeFromBookmark,
+  addToBookmark,
+}: any) => {
+  const saved = useMemo(() => offlinePosts.includes(id), [offlinePosts, id]);
 
-  const _bookMarkPost = () => {
-    setSaved((p) => !p);
-  };
+  const _bookMarkPost = useCallback(() => {
+    if (saved) {
+      removeFromBookmark(id);
+    } else {
+      addToBookmark(id);
+    }
+  }, [id, saved]);
 
   return (
     <SafeAreaView>
-      <View style={[options.headerStyle, { height: 50 }]}>
+      <View style={options.headerStyle}>
         <View
           style={{
             display: "flex",
@@ -33,14 +47,12 @@ const PostScreenHeader = ({ navigation, /* title, link, */ options }: any) => {
           />
           <Text style={styles.text}>News</Text>
         </View>
-
         <Appbar.Action
           icon={saved ? "bookmark" : "bookmark-outline"}
           onPress={_bookMarkPost}
           color="white"
         />
       </View>
-      <MainMenu navigation={navigation} />
     </SafeAreaView>
   );
 };
@@ -82,11 +94,15 @@ const mapStateToProps = (state: any) => {
   return {
     url: state.globalState.url,
     posts: state.api[`posts-${appIndex}`],
+    offlinePosts: state.offlineData.postIds,
     appIndex,
   };
 };
 
-const Post = compose<React.FC<any>>(connect(mapStateToProps), HeaderContainer);
+const Post = compose<React.FC<any>>(
+  connect(mapStateToProps, { addToBookmark, removeFromBookmark }),
+  HeaderContainer
+);
 export default Post(PostScreenHeader);
 
 const styles = StyleSheet.create({
