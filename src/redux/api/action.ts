@@ -131,7 +131,7 @@ export const postApi = (url = "", obj = {}, id = "postApi") => {
 export const addApi =
   (id: any, json: any) =>
   (dispatch: (arg0: { id: any; type: string; payload: any }) => any) =>
-    dispatch(fetchApiAdd(id, json));
+    Promise.resolve(dispatch(fetchApiAdd(id, json)));
 
 export const prependApi =
   (id: any, json: any) =>
@@ -174,9 +174,6 @@ export const getApi = (
       .get(`${url}?${params}`, args)
       .then((res) => {
         id === null || dispatch(fetchApiSuccess(id, res.data));
-        /*  if (id === "videos-0") {
-          console.log(res.data, "Res");
-        } */
 
         return res;
       })

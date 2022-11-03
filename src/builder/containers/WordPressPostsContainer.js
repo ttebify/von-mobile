@@ -97,6 +97,19 @@ class WordPressClass extends React.Component {
 
   getPostsById(ids) {}
 
+  getAvailableCommentsId() {
+    const { comments } = this.props;
+
+    return new Promise((resolve) => {
+      if (comments && comments.data && Array.isArray(comments.data)) {
+        var ids = comments.data.map((comment) => comment.id);
+        resolve(ids);
+      } else {
+        resolve([]);
+      }
+    });
+  }
+
   //here we will get id of all the posts that have been previously fetched in order to exclude the from future fetches
   getAvailablePostsId() {
     const { posts } = this.props;
@@ -146,6 +159,27 @@ class WordPressClass extends React.Component {
     return this.fetchPosts({ offset, ...obj });
   }
 
+  fetchPostComments(postId) {
+    return this.fetchComments({ post: postId });
+  }
+
+  async fetchComments(obj = {}) {
+    let { per_page, orderby, order } = this;
+    let { getApi, url } = this.props;
+    let apiId = "comments";
+
+    //get already fetch comments
+    const ids = await this.getAvailableCommentsId();
+    if (ids.length > 0) {
+      obj.exclude = ids.join();
+    }
+    return getApi(
+      `${url}/wp-json/wp/v2/comments`,
+      { per_page, orderby, order, ...obj, _embed: "" },
+      apiId
+    );
+  }
+
   async fetchPosts(obj = {}) {
     let { per_page, orderby, order } = this;
     let { getApi, url, appIndex } = this.props;
@@ -156,6 +190,19 @@ class WordPressClass extends React.Component {
     if (ids.length > 0) {
       obj.exclude = ids.join();
     }
+
+    return getApi(
+      `${url}/wp-json/wp/v2/posts`,
+      { per_page, orderby, order, ...obj, _embed: "" },
+      apiId
+    );
+  }
+
+  async searchPosts(obj = {}) {
+    let { per_page, orderby, order } = this;
+    let { getApi, url } = this.props;
+    let apiId = "searched-posts";
+
     return getApi(
       `${url}/wp-json/wp/v2/posts`,
       { per_page, orderby, order, ...obj, _embed: "" },
@@ -342,6 +389,50 @@ class WordPressClass extends React.Component {
     return posts.map((post) => this.preparePost(post, key));
   }
 
+  prepareComment(comment = {}, key = 0) {
+    const id = dotProp.get(comment, "id", 0);
+    const postId = dotProp.get(comment, "post", "");
+    const parent = dotProp.get(comment, "parent", 0);
+    const author = dotProp.get(comment, "author_name", "");
+    const date = dotProp.get(comment, "date", new Date());
+    const content = dotProp.get(comment, "content.rendered", "");
+    const status = dotProp.get(comment, "status", "");
+    const avatar = dotProp.get(comment, "author_avatar_urls", {});
+
+    const {
+      size24 = {
+        source_url:
+          "https://secure.gravatar.com/avatar/09e9857670e1c85b5d3fe5466dd47a76?s=24&d=mm&r=g",
+      },
+      size48 = {
+        source_url:
+          "https://secure.gravatar.com/avatar/09e9857670e1c85b5d3fe5466dd47a76?s=48&d=mm&r=g",
+      },
+      size96 = {
+        source_url:
+          "https://secure.gravatar.com/avatar/09e9857670e1c85b5d3fe5466dd47a76?s=96&d=mm&r=g",
+      },
+    } = avatar;
+
+    const dateFromNow = moment(date, "YYYY-MM-DD HH:mm:ss").fromNow();
+
+    return {
+      key: `comment-${key}-${id}`,
+      id,
+      postId,
+      author,
+      content,
+      parent,
+      date: dateFromNow,
+      status,
+      authorAvatar: { size24, size48, size96 },
+    };
+  }
+
+  prepareComments(comments, key = 0) {
+    return comments.map((comment) => this.prepareComment(comment, key));
+  }
+
   prepareMenu(data) {
     //const {navigate} = NavigationService;
     const { navigation } = this.props;
@@ -408,12 +499,17 @@ class WordPressClass extends React.Component {
   render() {
     const { fetchMorePosts } = this;
 
-    const { navigation, posts } = this.props;
+    const { navigation, posts, comments } = this.props;
 
     var args = { fetchMorePosts };
 
     args.posts =
       posts && Array.isArray(posts.data) ? this.preparePosts(posts.data) : [];
+
+    args.comments =
+      comments && Array.isArray(comments.data)
+        ? this.prepareComments(comments.data)
+        : [];
 
     if (navigation) {
       args.navigation = navigation;
@@ -430,7 +526,8 @@ const mapStateToProps = (state) => {
 
   return {
     url: state.globalState.url,
-    posts: state.api[`posts-${appIndex}`].slice(5),
+    posts: state.api[`posts-${appIndex}`],
+    comments: state.api.comments,
     pages: state.api[`pages-${appIndex}`],
     categories: state.api[`categories-${appIndex}`],
     gState: state.globalState,

@@ -1,35 +1,31 @@
-import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import React, { useState } from "react";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Card, Paragraph } from "react-native-paper";
 import Divider from "../components/Divider";
 import { allowedCategoryLists } from "../components/DrawerComp";
 import LoadingComp from "../components/LoadingComp";
-import CategoriesContainer from "../containers/CategoriesContainer";
+import SearchContainer from "../containers/SearchContainer";
 import { Row } from "../layouts/FlexBox";
 
 function SearchScreen({
   navigation,
-  searchTerm,
   categories,
   isFetching,
-  posts,
+  searchedPosts,
+  rawPostsBody,
+  addApi,
+  searchTerm,
 }: any) {
+  const [loading, setLoading] = useState(false);
   const { navigate } = navigation;
 
-  const root = categories.filter(
-    (cat: { parent: number; name: string }) =>
-      cat.parent === 0 && allowedCategoryLists.includes(cat.name.toLowerCase())
-  );
-
-  const filteredPosts = posts.filter((post) => {
-    return (
-      searchTerm.length > 3 &&
-      post.title.toLowerCase().includes(searchTerm?.toLowerCase())
-    );
-  });
-
-  const showPosts = filteredPosts.map((post: any) => {
+  const showPosts = searchedPosts.map((post: any) => {
     const cats = categories.filter(
       (cat: { parent: number; name: string; id: number }) =>
         cat.parent === 0 && post.categories.includes(cat.id)
@@ -43,11 +39,26 @@ function SearchScreen({
           marginVertical: 5,
           elevation: 2,
         }}
-        onPress={() =>
-          navigate("PostScreen", { title: post.title, id: post.id })
-        }
       >
-        <View style={{ flex: 1, flexDirection: "row" }}>
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            opacity: loading ? 0.6 : 1,
+          }}
+          onPress={() => {
+            // Add to post
+            const rawPost = rawPostsBody.data.find((p) => p.id === post.id);
+            if (rawPost) {
+              setLoading(true);
+              addApi("posts-0", rawPost).then(() => {
+                setLoading(false);
+                navigate("PostScreen", { title: post.title, id: post.id });
+              });
+            }
+          }}
+          disabled={loading}
+        >
           <View
             style={{
               flex: 1,
@@ -91,45 +102,56 @@ function SearchScreen({
               source={{ uri: post.media.full.source_url }}
             />
           </View>
-        </View>
+        </TouchableOpacity>
       </Card>
     );
   });
 
   return (
-    <ScrollView style={{ flex: 1, paddingHorizontal: "5%" }}>
+    <ScrollView style={{ flex: 1, paddingHorizontal: "3%" }}>
+      <Row style={{ flexWrap: "wrap" }}>
+        {allowedCategoryLists.map(({ name, label }) => (
+          <TouchableOpacity
+            key={name}
+            style={{
+              padding: 5,
+              backgroundColor: "#fff",
+              borderRadius: 2,
+              margin: 6,
+            }}
+            onPress={() => navigate(name)}
+          >
+            <Text>{label}</Text>
+          </TouchableOpacity>
+        ))}
+      </Row>
+
+      <Divider />
       {isFetching ? (
         <Row style={{ justifyContent: "center", paddingVertical: 10 }}>
           <LoadingComp />
-          <Text> Grouping categories...</Text>
+          <Text> Searching...</Text>
         </Row>
       ) : (
-        <Row style={{ flexWrap: "wrap" }}>
-          {root.map((cat) => (
-            <TouchableOpacity
-              key={cat.id}
-              style={{
-                padding: 5,
-                backgroundColor: "#fff",
-                borderRadius: 2,
-                margin: 6,
-              }}
-              onPress={() =>
-                navigate("PostsScreen", { title: cat.name, categories: cat.id })
-              }
-            >
-              <Text>{cat.name}</Text>
-            </TouchableOpacity>
-          ))}
-        </Row>
+        <View>
+          <Text
+            style={{
+              marginVertical: 10,
+              opacity: 0.6,
+              fontWeight: "300",
+              textDecorationLine: "underline",
+            }}
+          >
+            Showing results {showPosts.length} for ({searchTerm})
+          </Text>
+          {showPosts}
+        </View>
       )}
-      <Divider />
-      {showPosts}
     </ScrollView>
   );
 }
 
-export default CategoriesContainer(SearchScreen);
+export default SearchContainer(SearchScreen);
 
 const styles = StyleSheet.create({
   text: {

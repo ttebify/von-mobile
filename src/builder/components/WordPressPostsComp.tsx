@@ -1,171 +1,12 @@
-import React, { useEffect, useMemo, useState } from "react";
-import {
-  Animated,
-  Dimensions,
-  Image,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { Text, Card, Paragraph, Button } from "react-native-paper";
-import HomeContainer from "../../containers/HomeContainer";
-import { width } from "../../layouts/dimensions";
-import { TabView, SceneMap, TabBar } from "react-native-tab-view";
-import { LinearGradient } from "expo-linear-gradient";
+import React, { Fragment } from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Text, Card, Paragraph, TouchableRipple } from "react-native-paper";
 import LoadingComp from "../../components/LoadingComp";
 import FrameBox from "../../layouts/FrameBox";
-import { Box, Row } from "../../layouts/FlexBox";
-
-export type Categories =
-  | "sports"
-  | "nigeria"
-  | "africa"
-  | "world"
-  | "special event";
+import { Row } from "../../layouts/FlexBox";
 
 const Wrapper = ({ children }) => {
   return <View>{children}</View>;
-};
-
-const deviceWidth = Dimensions.get("window").width;
-const FIXED_BAR_WIDTH = width;
-const BAR_SPACE = 5;
-
-export const WordPressCardSlide = ({ posts, navigation }) => {
-  const { navigate } = navigation;
-
-  const numItems = 5;
-  const itemWidth = FIXED_BAR_WIDTH / numItems - (numItems - 2) * BAR_SPACE;
-  const animVal = new Animated.Value(0);
-
-  const barArray = new Array(5).fill("").map((_e, i: number) => {
-    const scrollBarVal = animVal.interpolate({
-      inputRange: [deviceWidth * (i - 1), deviceWidth * (i + 1)],
-      outputRange: [-itemWidth, itemWidth],
-      extrapolate: "clamp",
-    });
-
-    return (
-      <View
-        key={`bar${i}`}
-        style={[
-          styles.track,
-          {
-            width: itemWidth,
-            marginLeft: i === 0 ? 0 : BAR_SPACE,
-          },
-        ]}
-      >
-        <Animated.View
-          style={[
-            styles.bar,
-            {
-              width: itemWidth,
-              transform: [{ translateX: scrollBarVal }],
-            },
-          ]}
-        />
-      </View>
-    );
-  });
-
-  const showPosts = posts.slice(0, 5).map((post) => (
-    <View
-      key={post.key}
-      style={{ height: 300, width, position: "relative", flex: 1 }}
-    >
-      <Card.Cover
-        source={{ uri: post.media.full.source_url }}
-        style={{ flex: 1 }}
-      />
-
-      <LinearGradient
-        colors={["rgba(0, 0, 0, 0)", "rgba(0, 0, 0, 0.67)"]}
-        locations={[0, 0.6]}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          flex: 1,
-          flexDirection: "column",
-          justifyContent: "flex-end",
-        }}
-      >
-        <View style={{ paddingHorizontal: "7%", paddingVertical: "12%" }}>
-          <Text
-            style={{
-              color: "white",
-              lineHeight: 21.78,
-              fontSize: 20,
-              marginBottom: "4%",
-              fontWeight: "600",
-            }}
-          >
-            {post.title}
-          </Text>
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-            }}
-          >
-            <Paragraph style={styles.heroSmallText}>{post.author}</Paragraph>
-            <Paragraph style={[styles.heroSmallText, { marginLeft: 10 }]}>
-              {post.date}
-            </Paragraph>
-          </View>
-        </View>
-      </LinearGradient>
-      <TouchableOpacity
-        onPress={() =>
-          navigate("PostScreen", { title: post.title, id: post.id })
-        }
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          flex: 1,
-        }}
-      />
-    </View>
-  ));
-
-  return (
-    <View
-      style={{
-        position: "relative",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <ScrollView
-        horizontal={true}
-        showsHorizontalScrollIndicator={false}
-        pagingEnabled
-        scrollEventThrottle={10}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { x: animVal } } }],
-          { useNativeDriver: false }
-        )}
-      >
-        {showPosts}
-      </ScrollView>
-      <View style={styles.barContainer}>{barArray}</View>
-      {posts.length > 0 && (
-        <Image
-          source={{
-            uri: "https://von.gov.ng/wp-content/uploads/2022/10/media-literacy-week-scaled.jpg",
-          }}
-          style={{ width, height: 62, marginVertical: 8 }}
-        />
-      )}
-    </View>
-  );
 };
 
 export const WordPressThumbnailList = ({
@@ -197,11 +38,13 @@ export const WordPressThumbnailList = ({
           marginHorizontal: "4%",
           elevation: 2,
         }}
-        onPress={() =>
-          navigate("PostScreen", { title: post.title, id: post.id })
-        }
       >
-        <View style={{ flex: 1, flexDirection: "row" }}>
+        <TouchableOpacity
+          style={{ flex: 1, flexDirection: "row" }}
+          onPress={() =>
+            navigate("PostScreen", { title: post.title, id: post.id })
+          }
+        >
           <View
             style={{
               flex: 1,
@@ -245,7 +88,7 @@ export const WordPressThumbnailList = ({
               source={{ uri: post.media.full.source_url }}
             />
           </View>
-        </View>
+        </TouchableOpacity>
       </Card>
     );
   });
@@ -272,7 +115,7 @@ export const WordPressCard = ({
   const { data } = categories;
   const slice = (data: any[]) => {
     if (offset === 0) return data;
-    else return data.slice(5, 15);
+    else return data.slice(5, 11);
   };
 
   const showPosts = slice(posts).map((post) => {
@@ -282,255 +125,60 @@ export const WordPressCard = ({
     );
 
     return (
-      <Card
+      <TouchableRipple
         key={post.id}
         onPress={() =>
           navigate("PostScreen", { title: post.title, id: post.id })
         }
         style={{
-          borderRadius: 10,
-          marginHorizontal: "4%",
+          borderRadius: 3,
+          marginHorizontal: "3%",
           marginVertical: "3%",
           elevation: 2,
+          backgroundColor: "white",
         }}
+        rippleColor="#CDDCDB"
       >
-        <Card.Cover
-          source={{ uri: post.media.full.source_url }}
-          style={{ height: 192 }}
-        />
-        <Card.Content style={styles.container}>
-          <Row style={{ marginBottom: 10 }}>
-            {cats.map((c: any) => (
-              <View
-                key={c.id}
-                style={{
-                  backgroundColor: "rgba(4, 146, 220, 1)",
-                  width: "auto",
-                  paddingVertical: 2,
-                  paddingHorizontal: 10,
-                  borderRadius: 3,
-                  marginRight: 4,
-                }}
-              >
-                <Text
+        <Fragment>
+          <Card.Cover
+            source={{ uri: post.media.full.source_url }}
+            style={{ height: 192 }}
+          />
+          <Card.Content style={styles.container}>
+            <Row style={{ marginBottom: 10 }}>
+              {cats.map((c: any) => (
+                <View
+                  key={c.id}
                   style={{
-                    color: "white",
-                    fontWeight: "600",
+                    backgroundColor: "rgba(4, 146, 220, 1)",
+                    width: "auto",
+                    paddingVertical: 2,
+                    paddingHorizontal: 10,
+                    borderRadius: 3,
+                    marginRight: 4,
                   }}
                 >
-                  {c.name}
-                </Text>
-              </View>
-            ))}
-          </Row>
-          <Paragraph style={styles.cardHeading}>{post.title}</Paragraph>
-          <Paragraph style={styles.date}>{post.date}</Paragraph>
-        </Card.Content>
-      </Card>
+                  <Text
+                    style={{
+                      color: "white",
+                      fontWeight: "600",
+                    }}
+                  >
+                    {c.name}
+                  </Text>
+                </View>
+              ))}
+            </Row>
+            <Paragraph style={styles.cardHeading}>{post.title}</Paragraph>
+            <Paragraph style={styles.date}>{post.date}</Paragraph>
+          </Card.Content>
+        </Fragment>
+      </TouchableRipple>
     );
   });
 
   return <View>{showPosts}</View>;
 };
-
-const TestingAllComp = ({
-  posts,
-  navigation,
-  categories,
-  fetchMoreByCategory,
-  isFetching: fetchingPosts,
-}) => {
-  const [index, setIndex] = useState(0);
-  const [routes] = useState([
-    { key: "Latest", title: "Latests" },
-    { key: "Nigeria", title: "Nigeria" },
-    { key: "Africa", title: "Africa" },
-    { key: "World", title: "World" },
-    { key: "Sports", title: "Sports" },
-    { key: "SpacialDayEvents", title: "Events" },
-  ]);
-
-  useEffect(() => {
-    const unsubscribe = navigation
-      .getParent()
-      .addListener("tabPress", (e: { target: string }) => {
-        // Prevent default behavior
-        if (e.target.startsWith("Home")) {
-          setIndex(0);
-        }
-      });
-
-    return unsubscribe;
-  }, [navigation]);
-
-  const args = { posts, navigation, categories, offset: 5 };
-  const initialLayout = {
-    width: Dimensions.get("window").width,
-  };
-
-  const LatestRoute = () =>
-    useMemo(
-      () => (
-        <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-          <WordPressCardSlide {...args} />
-          <WordPressCard {...args} />
-          <WordPressThumbnailList {...args} />
-        </ScrollView>
-      ),
-      [args]
-    );
-
-  const CategoryView = ({ catName }: { catName: Categories }) => {
-    const { isFetching, data } = categories;
-
-    if (isFetching || !data || data.length === 0) {
-      return (
-        <FrameBox>
-          <LoadingComp />
-        </FrameBox>
-      );
-    }
-
-    const selectedCat = data.find(
-      (cat: { parent: number; name: string }) =>
-        cat.parent === 0 && cat.name.toLowerCase() === catName
-    );
-
-    const filteredPost = posts.filter((post: any) => {
-      return post.categories.includes(selectedCat.id);
-    });
-
-    if (filteredPost.length === 0) {
-      return (
-        <FrameBox>
-          {fetchingPosts ? (
-            <Text>Please wait...</Text>
-          ) : (
-            <Text>Try to reload</Text>
-          )}
-          <Box
-            style={{ pMarginLeft: 30, pMarginRight: 30, marginVertical: 10 }}
-          >
-            {fetchingPosts ? (
-              <LoadingComp />
-            ) : (
-              <Box
-                style={{
-                  pMarginLeft: 30,
-                  pMarginRight: 30,
-                  marginVertical: 10,
-                }}
-              >
-                <Button
-                  icon="refresh"
-                  mode="text"
-                  onPress={() => fetchMoreByCategory(selectedCat.id)}
-                >
-                  Reload
-                </Button>
-              </Box>
-            )}
-          </Box>
-        </FrameBox>
-      );
-    }
-
-    const { navigate } = navigation;
-    return (
-      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-        {filteredPost.map((post) => (
-          <Card
-            key={post.key}
-            onPress={() =>
-              navigate("PostScreen", { title: post.title, id: post.id })
-            }
-            style={{
-              borderRadius: 10,
-              marginHorizontal: "4%",
-              marginVertical: "3%",
-              elevation: 2,
-            }}
-          >
-            <Card.Cover
-              source={{ uri: post.media.full.source_url }}
-              style={{ height: 192 }}
-            />
-            <Card.Content style={styles.container}>
-              <Paragraph style={styles.cardHeading}>{post.title}</Paragraph>
-              <Paragraph style={styles.date}>{post.date}</Paragraph>
-            </Card.Content>
-          </Card>
-        ))}
-        <Box style={{ pMarginLeft: 30, pMarginRight: 30, marginVertical: 10 }}>
-          {fetchingPosts ? (
-            <LoadingComp />
-          ) : (
-            <Box
-              style={{
-                pMarginLeft: 30,
-                pMarginRight: 30,
-                marginVertical: 10,
-              }}
-            >
-              <Button
-                icon="refresh"
-                mode="text"
-                onPress={() => fetchMoreByCategory(selectedCat.id)}
-              >
-                Load More
-              </Button>
-            </Box>
-          )}
-        </Box>
-      </ScrollView>
-    );
-  };
-  const NigeriaRoute = () => <CategoryView catName="nigeria" />;
-  const AfricaRoute = () => <CategoryView catName="africa" />;
-  const WorldRoute = () => <CategoryView catName="world" />;
-  const SportsRoute = () => <CategoryView catName="sports" />;
-  const SpacialDayEventsRoute = () => <CategoryView catName="special event" />;
-
-  const renderScene = useMemo(
-    () =>
-      SceneMap({
-        Latest: LatestRoute,
-        Nigeria: NigeriaRoute,
-        Africa: AfricaRoute,
-        World: WorldRoute,
-        Sports: SportsRoute,
-        SpacialDayEvents: SpacialDayEventsRoute,
-      }),
-    [LatestRoute]
-  );
-
-  const _renderTabBar = (props) => (
-    <TabBar
-      {...props}
-      indicatorStyle={{ backgroundColor: "rgba(4, 146, 220, 1)" }}
-      style={{ backgroundColor: "white" }}
-      activeColor="rgba(0, 0, 0, 0.87)"
-      inactiveColor="rgba(0, 0, 0, 0.69)"
-      labelStyle={{ textTransform: "capitalize" }}
-      tabStyle={{ width: 80 }}
-      scrollEnabled
-    />
-  );
-
-  return (
-    <TabView
-      navigationState={{ index, routes }}
-      renderScene={renderScene}
-      onIndexChange={setIndex}
-      style={{ width: width }}
-      renderTabBar={_renderTabBar}
-      swipeEnabled={false}
-      initialLayout={initialLayout}
-    />
-  );
-};
-
-export default HomeContainer(TestingAllComp);
 
 const styles = StyleSheet.create({
   cardHeading: {
@@ -547,30 +195,5 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: "5%",
-  },
-  heroSmallText: {
-    color: "white",
-    fontSize: 10,
-    lineHeight: 12,
-    fontWeight: "400",
-  },
-  barContainer: {
-    position: "absolute",
-    zIndex: 2,
-    bottom: 100,
-    flexDirection: "row",
-  },
-  track: {
-    backgroundColor: "#cccccc",
-    overflow: "hidden",
-    height: 4,
-    borderRadius: 4,
-  },
-  bar: {
-    backgroundColor: "#5294d6",
-    height: 4,
-    position: "absolute",
-    left: 0,
-    top: 0,
   },
 });

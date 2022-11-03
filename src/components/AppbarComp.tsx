@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import FrameBox from "../layouts/FrameBox";
 
 const AppbarComp = ({ navigation, route, options }: any) => {
-  const [visible, setVisible] = React.useState(true);
+  const [visible, setVisible] = React.useState(false);
 
   const title = route.params?.title ? route.params?.title : "Voice of Nigeria";
   const { navigate } = navigation;

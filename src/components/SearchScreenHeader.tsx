@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Appbar, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -10,6 +10,7 @@ const SearchScreenHeader = ({
   enterSearch,
   searchTerm,
 }: any) => {
+  const [value, setValue] = useState("");
   return (
     <SafeAreaView>
       <View style={[options.headerStyle]}>
@@ -33,12 +34,24 @@ const SearchScreenHeader = ({
             mode="flat"
             outlineColor="transparent"
             autoFocus
-            value={searchTerm}
-            onChangeText={(text) => enterSearch(text)}
+            value={value}
+            defaultValue={searchTerm}
+            onChangeText={(text) => setValue(text)}
             error={false}
             placeholderTextColor="rgba(245, 245, 245, 0.68)"
             activeUnderlineColor="rgba(245, 245, 245, 0.68)"
             theme={{ colors: { text: "rgba(245, 245, 245, 1)" } }}
+          />
+          <Appbar.Action
+            icon="magnify"
+            onPress={() => {
+              if (value.length > 3) {
+                enterSearch(value);
+              }
+            }}
+            disabled={value.length < 3}
+            color="white"
+            size={30}
           />
         </View>
       </View>
@@ -52,7 +65,7 @@ const styles = StyleSheet.create({
   textInputContainer: {
     fontWeight: "600",
     fontSize: 16,
-    width: "100%",
+    width: "66%",
     backgroundColor: "transparent",
     borderColor: "transparent",
   },

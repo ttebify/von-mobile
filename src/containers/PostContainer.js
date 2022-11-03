@@ -9,6 +9,7 @@ const PostContainer = (Comp, rest = {}) =>
     constructor(props) {
       super(props);
       this.fetchPostsByCategory = this.fetchPostsByCategory.bind(this);
+      this.fetchPostComments = this.fetchPostComments.bind(this);
     }
 
     componentDidMount() {
@@ -23,17 +24,29 @@ const PostContainer = (Comp, rest = {}) =>
     }
 
     render() {
-      const { id, posts, appIndex, ...rest } = this.props;
+      const { id, posts, appIndex, comments, ...rest } = this.props;
 
       const data = this.getSinglePost({ id });
 
       const post = data ? this.preparePost(data) : {};
+
+      const postComments =
+        comments && Array.isArray(comments)
+          ? this.prepareComments(
+              comments.data.filter((comment) => comment.post === id)
+            )
+          : [];
+
+      const isFetchingComments = comments ? comments.isFetching : false;
 
       var args = {
         id,
         post,
         posts,
         fetchPostsByCategory: this.fetchPostsByCategory,
+        fetchPostComments: this.fetchPostComments,
+        isFetchingComments,
+        comments: postComments,
         ...rest,
       };
 
@@ -56,6 +69,7 @@ const mapStateToProps = (state) => {
   return {
     url: state.globalState.url,
     posts: state.api[`posts-${appIndex}`],
+    comments: state.api.comments,
     appIndex,
   };
 };

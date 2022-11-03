@@ -22,6 +22,17 @@ const reducer = (
 
   switch (type) {
     case FETCH_API_REQUEST:
+      if (id === "searched-posts") {
+        return {
+          ...state,
+          [id]: {
+            isFetching: true,
+            data: [],
+            offset: oldOffset,
+          },
+        };
+      }
+
       return {
         ...state,
         [id]: {
@@ -40,6 +51,17 @@ const reducer = (
       } else {
         count = 1;
         newData = [payload];
+      }
+
+      if (id === "searched-posts") {
+        return {
+          ...state,
+          [id]: {
+            isFetching: false,
+            data: [...newData],
+            offset: oldOffset + count,
+          },
+        };
       }
 
       return {

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Card, Paragraph } from "react-native-paper";
+import React, { Fragment, useEffect, useState } from "react";
+import { Card, Paragraph, TouchableRipple } from "react-native-paper";
 import VideosContainer from "../containers/VideosContainer";
 import axios from "axios";
 import {
@@ -79,62 +79,66 @@ const Videos = ({ isFetching, playlistId }: any) => {
       showsHorizontalScrollIndicator={false}
       extraData={view}
       renderItem={({ item, index }) => (
-        <Card
+        <TouchableRipple
           key={item.id}
           style={{
-            borderRadius: 10,
-            marginHorizontal: "4%",
+            borderRadius: 3,
+            marginHorizontal: "3%",
             marginVertical: "3%",
             elevation: 2,
+            backgroundColor: "white",
           }}
+          rippleColor="#CDDCDB"
         >
-          <ImageBackground
-            source={{ uri: item.snippet.thumbnails.high.url }}
-            resizeMode="cover"
-            style={styles.image}
-          >
-            <LoadingComp
-              style={{
-                position: "absolute",
-                top: "40%",
-                marginHorizontal: "50%",
-              }}
-            />
-            <YoutubePlayer
-              height={185}
-              videoId={item.snippet.resourceId.videoId}
-              webViewStyle={{
-                backgroundColor: "rgba(0, 0, 0, 0)",
-              }}
-              webViewProps={{
-                renderToHardwareTextureAndroid: true,
-                androidLayerType:
-                  Platform.OS === "android" && Platform.Version <= 22
-                    ? "hardware"
-                    : "none",
-              }}
-              initialPlayerParams={{
-                modestbranding: true,
-              }}
-            />
-          </ImageBackground>
-          <Card.Content style={styles.container}>
-            <Paragraph style={styles.cardHeading}>
-              {item.snippet.title}
-            </Paragraph>
-            <Row style={{ justifyContent: "space-between", marginTop: 15 }}>
-              <Paragraph>{view[index]} views</Paragraph>
-              {
-                <Paragraph>
-                  {moment(
-                    item.snippet.publishedAt,
-                    "YYYY-MM-DD HH:mm:ss"
-                  ).fromNow()}
-                </Paragraph>
-              }
-            </Row>
-          </Card.Content>
-        </Card>
+          <Fragment>
+            <ImageBackground
+              source={{ uri: item.snippet.thumbnails.high.url }}
+              resizeMode="cover"
+              style={styles.image}
+            >
+              <LoadingComp
+                style={{
+                  position: "absolute",
+                  top: "40%",
+                  marginHorizontal: "50%",
+                }}
+              />
+              <YoutubePlayer
+                height={185}
+                videoId={item.snippet.resourceId.videoId}
+                webViewStyle={{
+                  backgroundColor: "rgba(0, 0, 0, 0)",
+                }}
+                webViewProps={{
+                  renderToHardwareTextureAndroid: true,
+                  androidLayerType:
+                    Platform.OS === "android" && Platform.Version <= 22
+                      ? "hardware"
+                      : "none",
+                }}
+                initialPlayerParams={{
+                  modestbranding: true,
+                }}
+              />
+            </ImageBackground>
+            <Card.Content style={styles.container}>
+              <Paragraph style={styles.cardHeading}>
+                {item.snippet.title}
+              </Paragraph>
+              <Row style={{ justifyContent: "space-between", marginTop: 15 }}>
+                <Paragraph>{view[index]} views</Paragraph>
+                {
+                  <Paragraph>
+                    {moment(
+                      item.snippet.publishedAt,
+                      "YYYY-MM-DD HH:mm:ss"
+                    ).fromNow()}
+                  </Paragraph>
+                }
+              </Row>
+            </Card.Content>
+          </Fragment>
+        </TouchableRipple>
       )}
     />
   );

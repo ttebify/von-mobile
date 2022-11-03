@@ -60,9 +60,15 @@ const HomeContainer = (Comp, rest = {}) =>
     render() {
       const { fetchMoreByCategory } = this;
 
-      const { navigation, appIndex, posts, categories = [] } = this.props;
+      const {
+        navigation,
+        appIndex,
+        posts,
+        categories = [],
+        ...rest
+      } = this.props;
 
-      var args = { fetchMoreByCategory, categories };
+      var args = { fetchMoreByCategory, categories, ...rest };
       args.posts =
         posts && Array.isArray(posts.data)
           ? this.preparePosts(posts.data, appIndex)

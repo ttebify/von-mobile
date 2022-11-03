@@ -25,18 +25,6 @@ const PostsContainer = (Comp, rest = {}) =>
       this.state = {};
 
       //desc, asc |author, date, id, include, modified, parent, relevance, slug, title
-      this.fetchMore = this.fetchMore.bind(this);
-    }
-
-    fetchMore() {
-      let obj = {};
-      const { categories } = this.props;
-
-      if (categories) {
-        obj.categories = categories;
-      }
-
-      this.fetchPosts(obj);
     }
 
     UNSAFE_componentWillMount() {
@@ -52,54 +40,11 @@ const PostsContainer = (Comp, rest = {}) =>
       }
     }
 
-    shouldComponentUpdate(nextProps) {
-      const oldCat = this.props.categories;
-      const newCat = nextProps.categories;
-
-      if (oldCat !== newCat) {
-        this.init();
-      }
-      return true;
-    }
-
-    init() {
-      const { categories, posts, navigation } = this.props;
-
-      if (navigation) {
-        //close Drawer
-        navigation.closeDrawer();
-      }
-
-      if (categories) {
-        if (posts) {
-          const check = posts.data.filter((post) => {
-            return post.categories.includes(categories);
-          });
-
-          if (check.length < 5) {
-            this.fetchMore();
-          }
-        } else {
-          this.fetchMore();
-        }
-      } else if (posts && posts.data) {
-      } else {
-        this.fetchMore();
-      }
-    }
-
-    componentDidMount() {
-      this._isMounted = true;
-
-      this.init();
-    }
-
     render() {
-      const { fetchMore } = this;
+      const { navigation, posts, categories, appIndex, comments, ...rest } =
+        this.props;
 
-      const { navigation, posts, categories, appIndex, ...rest } = this.props;
-
-      const args = { fetchMore, ...rest };
+      const args = { ...rest };
 
       if (posts) {
         //args.posts = posts;
@@ -124,6 +69,11 @@ const PostsContainer = (Comp, rest = {}) =>
           : [];
       }
 
+      args.comments =
+        comments && Array.isArray(comments.data)
+          ? this.prepareComments(comments.data)
+          : [];
+
       if (navigation) {
         args.navigation = navigation;
       }
@@ -138,6 +88,7 @@ const mapStateToProps = (state) => {
   return {
     url: state.globalState.url,
     posts: state.api[`posts-${appIndex}`],
+    comments: state.api.comments,
     categories: state.api[`categories-${appIndex}`],
     searchTerm: state.globalState.search,
     appIndex,

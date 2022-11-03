@@ -1,6 +1,4 @@
 import React from "react";
-import { connect } from "react-redux";
-import LoadingComp from "./LoadingComp";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import { LinearGradient } from "expo-linear-gradient";
 import theme from "../customTheme";
@@ -10,25 +8,15 @@ import { Row } from "../layouts/FlexBox";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export const allowedCategoryLists = [
-  "sports",
-  "nigeria",
-  "africa",
-  "world",
-  "special event",
-  "politics",
-  "health",
-  "business",
+  { name: "Nigeria", label: "Nigeria" },
+  { label: "Africa", name: "Africa" },
+  { label: "World", name: "World" },
+  { label: "Sports", name: "Sports" },
+  { label: "Special Events", name: "Events" },
 ];
 
-const DrawerComp = ({ categories, navigation }: any) => {
+const DrawerComp = ({ navigation }: any) => {
   const { navigate } = navigation;
-
-  const data = categories && categories.data ? categories.data : [];
-
-  let root = data.filter(
-    (cat: { parent: number; name: string }) =>
-      cat.parent === 0 && allowedCategoryLists.includes(cat.name.toLowerCase())
-  );
 
   const { colors } = theme();
   const contentOptions = {
@@ -42,17 +30,15 @@ const DrawerComp = ({ categories, navigation }: any) => {
     },
   };
 
-  var menu = root.map((n: { name: any; id: any }, i: any) => {
-    const { name, id } = n;
-
+  var menu = allowedCategoryLists.map((cat) => {
     return (
       <DrawerItem
-        key={`list-${i}`}
-        label={name}
+        key={`list-${cat.name}`}
+        label={cat.label}
         {...contentOptions}
         onPress={() => {
           navigation.closeDrawer();
-          navigate("PostsScreen", { title: name, categories: id });
+          navigate(cat.name);
         }}
       />
     );
@@ -79,7 +65,15 @@ const DrawerComp = ({ categories, navigation }: any) => {
         </Row>
       </SafeAreaView>
       <DrawerContentScrollView>
-        {data.length === 0 ? <LoadingComp /> : menu}
+        <DrawerItem
+          label="My News"
+          onPress={() => {
+            navigation.closeDrawer();
+            navigate("BookmarkScreen");
+          }}
+          {...contentOptions}
+        />
+        {menu}
         <View
           style={{
             borderColor: "rgba(4, 80, 139, 0.19)",
@@ -88,10 +82,10 @@ const DrawerComp = ({ categories, navigation }: any) => {
           }}
         />
         <DrawerItem
-          label="My News"
+          label="Eye Witness Report"
           onPress={() => {
             navigation.closeDrawer();
-            navigate("BookmarkScreen");
+            // navigate("BookmarkScreen");
           }}
           {...contentOptions}
         />
@@ -124,15 +118,7 @@ const DrawerComp = ({ categories, navigation }: any) => {
   );
 };
 
-const mapState = (state: any) => {
-  const appIndex = state.globalState.currentApp || 0;
-  return {
-    categories: state.api[`categories-${appIndex}`],
-    gState: state.globalState,
-  };
-};
-
-export default connect(mapState)(DrawerComp);
+export default DrawerComp;
 
 const styles = StyleSheet.create({
   text: {

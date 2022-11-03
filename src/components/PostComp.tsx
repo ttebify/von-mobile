@@ -15,6 +15,8 @@ import { width } from "../layouts/dimensions";
 import theme from "../customTheme";
 import { Row } from "../layouts/FlexBox";
 import ModalBottom from "./ModalButtom";
+import FrameBox from "../layouts/FrameBox";
+import LoadingComp from "./LoadingComp";
 
 const tagsStyles = {
   body: {
@@ -27,67 +29,80 @@ const tagsStyles = {
 
 interface CommentProps {
   comments: any[];
+  fetching: boolean;
+  fetchCommentsHandler: () => void;
 }
-const PostComments = ({ comments }: CommentProps) => {
-  const coms = [
-    {
-      id: "uyuidk",
-      user: "john@gmail.com",
-      time: "45sec ago",
-      comment:
-        "The President was received on arrival by his Chief of Staff, Professor Ibrahim Gambari and Minister of the Federal Capital Territory, Mohammed Bello as well as heads of security agencies.",
-    },
-    {
-      id: "u33idk",
-      user: "amos@gmail.com",
-      time: "3sec ago",
-      comment:
-        "The President was received on arrival by his Chief of Staff, Professor Ibrahim Gambari and Minister of the Federal Capital Territory, Mohammed Bello as well as heads of security agencies.",
-    },
-    {
-      id: "uy5idk",
-      user: "ttebify@gmail.com",
-      time: "38sec ago",
-      comment:
-        "The President was received on arrival by his Chief of Staff, Professor Ibrahim Gambari and Minister of the Federal Capital Territory, Mohammed Bello as well as heads of security agencies.",
-    },
-  ];
-
-  comments = coms;
-  return (
-    <View>
-      {comments.map((comment) => (
-        <Card key={comment.id} style={{ marginBottom: 20 }}>
-          <Card.Title
-            title={comment.user}
-            subtitle={comment.time}
-            titleStyle={{ fontWeight: "400", color: "rgba(0, 0, 0, 0.78)" }}
-          />
-          <Card.Content>
-            <Paragraph>{comment.comment}</Paragraph>
-            <Row>
-              <Button
-                icon="reply"
-                mode="text"
-                onPress={() => {}}
-                style={styles.actionButtons}
-                labelStyle={{ fontSize: 14 }}
-                uppercase={false}
-              >
-                Reply
-              </Button>
-            </Row>
-          </Card.Content>
-        </Card>
-      ))}
-    </View>
-  );
+const PostComments = ({
+  comments,
+  fetching,
+  fetchCommentsHandler,
+}: CommentProps) => {
+  if (fetching) {
+    return (
+      <FrameBox style={{ padding: 30 }}>
+        <LoadingComp />
+        <Text>Fetching comments...</Text>
+      </FrameBox>
+    );
+  } else if (!fetching && comments.length === 0) {
+    return (
+      <View style={{ padding: 30 }}>
+        <Text style={{ textAlign: "center", marginVertical: 10 }}>
+          There are currently no approved comments for this post.
+        </Text>
+        <Button
+          icon="refresh"
+          mode="outlined"
+          uppercase={false}
+          onPress={fetchCommentsHandler}
+        >
+          Fetch comments
+        </Button>
+      </View>
+    );
+  } else
+    return (
+      <View>
+        {comments.map((comment) => (
+          <Card key={comment.id} style={{ marginBottom: 20 }}>
+            <Card.Title
+              title={comment.author}
+              subtitle={comment.date}
+              titleStyle={{ fontWeight: "400", color: "rgba(0, 0, 0, 0.78)" }}
+            />
+            <Card.Content>
+              <Paragraph>{comment.content}</Paragraph>
+              <Row>
+                <Button
+                  icon="reply"
+                  mode="text"
+                  onPress={() => {}}
+                  style={styles.actionButtons}
+                  labelStyle={{ fontSize: 14 }}
+                  uppercase={false}
+                >
+                  Reply
+                </Button>
+              </Row>
+            </Card.Content>
+          </Card>
+        ))}
+      </View>
+    );
 };
 
 let checker = (arr: any[], target: any[]) =>
   target.some((v) => arr.includes(v));
 
-const Post = ({ post = {}, posts, fetchPostsByCategory, navigation }) => {
+const Post = ({
+  post = {},
+  posts,
+  fetchPostsByCategory,
+  fetchPostComments,
+  isFetchingComments,
+  navigation,
+  comments,
+}) => {
   const [liked, setLiked] = useState(false);
   const [relatedPosts, setRelatedPosts] = useState<any[]>([]);
   const [request, setRequest] = useState(0);
@@ -103,7 +118,7 @@ const Post = ({ post = {}, posts, fetchPostsByCategory, navigation }) => {
     media,
     author,
     link,
-    id: postId,
+    id: postId = 0,
     categories,
   } = post as any;
   const { colors } = theme();
@@ -143,6 +158,7 @@ const Post = ({ post = {}, posts, fetchPostsByCategory, navigation }) => {
       if (filtered.length < 5) {
         // fetch more
         setRequest((c) => c + 1);
+        console.log(request, "request");
         if (request < 1) {
           fetchPostsByCategory(categories);
         }
@@ -155,7 +171,12 @@ const Post = ({ post = {}, posts, fetchPostsByCategory, navigation }) => {
   return (
     <View>
       <Card theme={{ roundness: 0 }}>
-        {media && <Card.Cover source={{ uri: media.full.source_url }} />}
+        {media && (
+          <Card.Cover
+            source={{ uri: media.full.source_url }}
+            theme={{ roundness: 0 }}
+          />
+        )}
         <Card.Content style={{ backgroundColor: colors.background }}>
           <Title>{title}</Title>
           <Row style={{ justifyContent: "space-between", marginTop: 15 }}>
@@ -189,7 +210,7 @@ const Post = ({ post = {}, posts, fetchPostsByCategory, navigation }) => {
               color="rgba(174, 174, 174, 1)"
               onPress={toggleModal}
             >
-              Comment
+              Comments
             </Button>
             <Button
               icon="share-variant"
@@ -222,7 +243,7 @@ const Post = ({ post = {}, posts, fetchPostsByCategory, navigation }) => {
           borderTopLeftRadius: 10,
           borderTopRightRadius: 10,
         }}
-        modalTitle={`Comments ${title}`}
+        modalTitle={`Comments on ${title}`}
         modalFooter={
           <Row style={{ position: "relative" }}>
             <TextInput
@@ -237,14 +258,23 @@ const Post = ({ post = {}, posts, fetchPostsByCategory, navigation }) => {
             <IconButton
               icon="send"
               size={30}
-              style={{ position: "absolute", top: "25%", right: 10 }}
+              style={{
+                position: "absolute",
+                top: "25%",
+                right: 10,
+                zIndex: 100,
+              }}
               onPress={() => {}}
               color="#5F6368"
             />
           </Row>
         }
       >
-        <PostComments comments={[]} />
+        <PostComments
+          comments={comments}
+          fetching={isFetchingComments}
+          fetchCommentsHandler={() => fetchPostComments(postId)}
+        />
       </ModalBottom>
 
       <View>

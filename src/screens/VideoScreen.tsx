@@ -1,14 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
-import {
-  FlatList,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { Card, Paragraph } from "react-native-paper";
+import { FlatList, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { Card, Paragraph, TouchableRipple } from "react-native-paper";
 import LoadingComp from "../components/LoadingComp";
 import VideosContainer from "../containers/VideosContainer";
 import FrameBox from "../layouts/FrameBox";
@@ -37,7 +30,7 @@ function VideoScreen({ videos, isFetching, navigation }: any) {
         data={videos}
         keyExtractor={(_, index) => index.toString()}
         renderItem={({ item }) => (
-          <View
+          <Card
             key={item.key}
             style={{
               height: 200,
@@ -52,45 +45,7 @@ function VideoScreen({ videos, isFetching, navigation }: any) {
               source={{ uri: item.media.standard.url }}
               style={{ flex: 1 }}
             />
-            <LinearGradient
-              colors={["rgba(0, 0, 0, 0)", "rgba(0, 0, 0, 0.67)"]}
-              locations={[0, 0.8]}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                flex: 1,
-                flexDirection: "column",
-                justifyContent: "flex-end",
-              }}
-            >
-              <View style={{ paddingHorizontal: "7%", paddingVertical: "12%" }}>
-                <Text
-                  style={{
-                    color: "white",
-                    lineHeight: 21.78,
-                    fontSize: 20,
-                    marginBottom: "4%",
-                    fontWeight: "600",
-                  }}
-                >
-                  {item.title}
-                </Text>
-                <View
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                  }}
-                >
-                  <Paragraph style={styles.heroSmallText}>
-                    {item.itemCount} Videos in this playlist
-                  </Paragraph>
-                </View>
-              </View>
-            </LinearGradient>
-            <TouchableOpacity
+            <TouchableRipple
               onPress={() => navigate("VideosScreen", { playlistId: item.id })}
               style={{
                 position: "absolute",
@@ -100,8 +55,49 @@ function VideoScreen({ videos, isFetching, navigation }: any) {
                 bottom: 0,
                 flex: 1,
               }}
-            />
-          </View>
+            >
+              <LinearGradient
+                colors={["rgba(0, 0, 0, 0)", "rgba(0, 0, 0, 0.67)"]}
+                locations={[0, 0.8]}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  flex: 1,
+                  flexDirection: "column",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <View
+                  style={{ paddingHorizontal: "7%", paddingVertical: "12%" }}
+                >
+                  <Text
+                    style={{
+                      color: "white",
+                      lineHeight: 21.78,
+                      fontSize: 20,
+                      marginBottom: "4%",
+                      fontWeight: "600",
+                    }}
+                  >
+                    {item.title}
+                  </Text>
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <Paragraph style={styles.heroSmallText}>
+                      {item.itemCount} Videos in this playlist
+                    </Paragraph>
+                  </View>
+                </View>
+              </LinearGradient>
+            </TouchableRipple>
+          </Card>
         )}
       />
     </SafeAreaView>
