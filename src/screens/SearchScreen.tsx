@@ -109,7 +109,7 @@ function SearchScreen({
 
   return (
     <ScrollView style={{ flex: 1, paddingHorizontal: "3%" }}>
-      <Row style={{ flexWrap: "wrap" }}>
+      <Row style={{ flexWrap: "wrap", marginTop: 10 }}>
         {allowedCategoryLists.map(({ name, label }) => (
           <TouchableOpacity
             key={name}
@@ -142,7 +142,9 @@ function SearchScreen({
               textDecorationLine: "underline",
             }}
           >
-            Showing results {showPosts.length} for ({searchTerm})
+            {searchTerm.length === 0
+              ? "Look for trending news, topics, events, and everything going on around you, etc."
+              : `Showing ${showPosts.length} results for (${searchTerm})`}
           </Text>
           {showPosts}
         </View>

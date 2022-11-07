@@ -44,6 +44,7 @@ export const WordPressThumbnailList = ({
           onPress={() =>
             navigate("PostScreen", { title: post.title, id: post.id })
           }
+          activeOpacity={0.8}
         >
           <View
             style={{

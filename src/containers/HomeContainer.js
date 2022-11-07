@@ -9,7 +9,7 @@ const HomeContainer = (Comp, rest = {}) =>
   class extends WordPressClass {
     apiId = "posts";
     offset = 0;
-    per_page = 15;
+    per_page = 20;
     search = "";
     orderby = "date";
     order = "desc";

@@ -1,4 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
+import { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Image,
@@ -16,11 +17,26 @@ const FIXED_BAR_WIDTH = width;
 const BAR_SPACE = 5;
 
 export const WordPressCardSlide = ({ posts, navigation }) => {
+  const [scrollIndex, setScrollIndex] = useState(0);
   const { navigate } = navigation;
+  const sliderRef = useRef<ScrollView>(null);
 
   const numItems = 5;
   const itemWidth = FIXED_BAR_WIDTH / numItems - (numItems - 2) * BAR_SPACE;
   const animVal = new Animated.Value(0);
+
+  useEffect(() => {
+    const handler = setInterval(() => {
+      if (scrollIndex >= deviceWidth * (numItems - 1)) {
+        setScrollIndex(0);
+      } else {
+        setScrollIndex((index) => (index += deviceWidth));
+      }
+      sliderRef.current?.scrollTo({ x: scrollIndex, y: 0, animated: true });
+    }, 4000);
+
+    return () => clearTimeout(handler);
+  }, [scrollIndex]);
 
   const barArray = new Array(5).fill("").map((_e, i: number) => {
     const scrollBarVal = animVal.interpolate({
@@ -128,6 +144,7 @@ export const WordPressCardSlide = ({ posts, navigation }) => {
     >
       <ScrollView
         horizontal={true}
+        ref={sliderRef}
         showsHorizontalScrollIndicator={false}
         pagingEnabled
         scrollEventThrottle={10}

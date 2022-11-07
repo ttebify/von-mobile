@@ -53,7 +53,11 @@ const DrawerComp = ({ navigation }: any) => {
     >
       <SafeAreaView style={styles.appBarHeader}>
         <Row
-          style={{ marginLeft: 10, paddingVertical: 17, alignItems: "center" }}
+          style={{
+            marginLeft: "10%",
+            paddingVertical: 16.5,
+            alignItems: "center",
+          }}
         >
           <Avatar.Image
             size={30}
@@ -85,7 +89,7 @@ const DrawerComp = ({ navigation }: any) => {
           label="Eye Witness Report"
           onPress={() => {
             navigation.closeDrawer();
-            // navigate("BookmarkScreen");
+            navigate("EyeWitnessScreen");
           }}
           {...contentOptions}
         />

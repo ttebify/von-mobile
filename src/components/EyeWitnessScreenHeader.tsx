@@ -2,9 +2,8 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Appbar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import MainMenu from "./MainMenuComp";
 
-const VideoScreenHeader = ({ navigation, options }: any) => {
+const EyeWitnessScreenHeader = ({ navigation, options }: any) => {
   return (
     <SafeAreaView>
       <View style={options.headerStyle}>
@@ -12,6 +11,7 @@ const VideoScreenHeader = ({ navigation, options }: any) => {
           style={{
             display: "flex",
             flexDirection: "row",
+            justifyContent: "space-between",
             alignItems: "center",
           }}
         >
@@ -21,15 +21,14 @@ const VideoScreenHeader = ({ navigation, options }: any) => {
             color="white"
             size={30}
           />
-          <Text style={styles.text}>Videos</Text>
+          <Text style={styles.text}>Eye Witness</Text>
         </View>
       </View>
-      <MainMenu navigation={navigation} />
     </SafeAreaView>
   );
 };
 
-export default VideoScreenHeader;
+export default EyeWitnessScreenHeader;
 
 const styles = StyleSheet.create({
   text: {

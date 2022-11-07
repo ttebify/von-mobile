@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Share, StyleSheet, Text, View } from "react-native";
+import { Share, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import PostContainer from "../containers/PostContainer";
 import { default as Box } from "../layouts/ResponsiveBox";
 import {
@@ -103,7 +103,6 @@ const Post = ({
   navigation,
   comments,
 }) => {
-  const [liked, setLiked] = useState(false);
   const [relatedPosts, setRelatedPosts] = useState<any[]>([]);
   const [request, setRequest] = useState(0);
   const [commentModalVisible, setModalVisible] = useState(false);
@@ -136,10 +135,6 @@ const Post = ({
       console.error(error);
     }
   }, [title]);
-
-  const likePost = () => {
-    setLiked((p) => !p);
-  };
 
   const toggleModal = () => {
     setModalVisible((p) => !p);
@@ -178,7 +173,9 @@ const Post = ({
           />
         )}
         <Card.Content style={{ backgroundColor: colors.background }}>
-          <Title>{title}</Title>
+          <Title style={{ fontSize: 28, marginVertical: 20, lineHeight: 36 }}>
+            {title}
+          </Title>
           <Row style={{ justifyContent: "space-between", marginTop: 15 }}>
             <Paragraph style={{ color: "rgba(174, 174, 174, 1)" }}>
               {author}
@@ -187,19 +184,7 @@ const Post = ({
               {date}
             </Paragraph>
           </Row>
-          <Row style={{ paddingVertical: 20 }}>
-            <Button
-              icon={liked ? "thumb-up" : "thumb-up-outline"}
-              mode={liked ? "contained" : "outlined"}
-              style={styles.actionButtons}
-              contentStyle={{ flexDirection: "row-reverse" }}
-              labelStyle={{ fontSize: 14 }}
-              uppercase={false}
-              color={liked ? "rgba(4, 98, 171, 1)" : "rgba(174, 174, 174, 1)"}
-              onPress={likePost}
-            >
-              Like
-            </Button>
+          <Row style={{ paddingVertical: 20, justifyContent: "space-between" }}>
             <Button
               icon="comment-text-outline"
               mode="outlined"
@@ -288,14 +273,16 @@ const Post = ({
           You Might Also Like
         </Text>
         {relatedPosts.map((post) => (
-          <Card
+          <TouchableOpacity
             key={post.key}
             style={{
               height: 120,
               marginVertical: 5,
               marginHorizontal: "4%",
               elevation: 2,
+              backgroundColor: "white",
             }}
+            activeOpacity={0.8}
             onPress={() =>
               navigate("PostScreen", { title: post.title, id: post.id })
             }
@@ -331,14 +318,14 @@ const Post = ({
                   <Paragraph style={styles.date}>{post.date}</Paragraph>
                 </View>
               </View>
-              <View style={{ width: "40%", margin: 2 }}>
+              <View style={{ width: "40%" }}>
                 <Card.Cover
                   style={{ flex: 1 }}
                   source={{ uri: post.media.full.source_url }}
                 />
               </View>
             </View>
-          </Card>
+          </TouchableOpacity>
         ))}
       </View>
     </View>

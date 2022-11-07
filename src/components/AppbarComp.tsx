@@ -77,9 +77,9 @@ const AppbarComp = ({ navigation, route, options }: any) => {
               <Menu.Item
                 onPress={() => {
                   closeMenu();
-                  // navigate("SettingsScreen");
+                  navigate("Live");
                 }}
-                title="Settings"
+                title="Live"
               />
               <Menu.Item
                 onPress={() => {
