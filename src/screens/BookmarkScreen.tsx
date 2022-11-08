@@ -35,9 +35,9 @@ function BookmarkScreen({
 
   return (
     <ScrollView style={{ flex: 1 }}>
-      {bookMarkedPosts.map((post) => (
+      {bookMarkedPosts.map((post, index) => (
         <Card
-          key={post.key}
+          key={`${post.key}-${index}`}
           style={{
             height: 120,
             marginVertical: 5,

@@ -2,7 +2,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useRef, useState } from "react";
 import {
   Animated,
-  Image,
+  // Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -69,9 +69,9 @@ export const WordPressCardSlide = ({ posts, navigation }) => {
     );
   });
 
-  const showPosts = posts.map((post) => (
+  const showPosts = posts.map((post, index) => (
     <View
-      key={post.key}
+      key={`${post.key}-${index}`}
       style={{ height: 300, width, position: "relative", flex: 1 }}
     >
       <Card.Cover
@@ -156,14 +156,14 @@ export const WordPressCardSlide = ({ posts, navigation }) => {
         {showPosts}
       </ScrollView>
       <View style={styles.barContainer}>{barArray}</View>
-      {posts.length > 0 && (
+      {/* {posts.length > 0 && (
         <Image
           source={{
             uri: "https://von.gov.ng/wp-content/uploads/2022/10/media-literacy-week-scaled.jpg",
           }}
           style={{ width, height: 62, marginVertical: 8 }}
         />
-      )}
+      )} */}
     </View>
   );
 };
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   barContainer: {
     position: "absolute",
     zIndex: 2,
-    bottom: 100,
+    bottom: 20,
     flexDirection: "row",
   },
 

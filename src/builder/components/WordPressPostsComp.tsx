@@ -1,8 +1,6 @@
 import React, { Fragment } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text, Card, Paragraph, TouchableRipple } from "react-native-paper";
-import LoadingComp from "../../components/LoadingComp";
-import FrameBox from "../../layouts/FrameBox";
 import { Row } from "../../layouts/FlexBox";
 
 const Wrapper = ({ children }) => {
@@ -23,7 +21,7 @@ export const WordPressThumbnailList = ({
     else return data.slice(11);
   };
 
-  const showPosts = slice(posts).map((post: any) => {
+  const showPosts = slice(posts).map((post: any, index) => {
     const cats = data.filter(
       (cat: { parent: number; name: string; id: number }) =>
         cat.parent === 0 && post.categories.includes(cat.id)
@@ -31,9 +29,9 @@ export const WordPressThumbnailList = ({
 
     return (
       <Card
-        key={post.key}
+        key={`${post.key}-${index}`}
         style={{
-          height: 150,
+          height: 110,
           marginVertical: 5,
           marginHorizontal: "4%",
           elevation: 2,
@@ -94,14 +92,6 @@ export const WordPressThumbnailList = ({
     );
   });
 
-  if (posts.length === 0) {
-    return (
-      <FrameBox style={{ marginTop: 20 }}>
-        <LoadingComp />
-      </FrameBox>
-    );
-  }
-
   return <Wrapper>{showPosts}</Wrapper>;
 };
 
@@ -119,7 +109,7 @@ export const WordPressCard = ({
     else return data.slice(5, 11);
   };
 
-  const showPosts = slice(posts).map((post) => {
+  const showPosts = slice(posts).map((post, index) => {
     const cats = data.filter(
       (cat: { parent: number; name: string; id: number }) =>
         cat.parent === 0 && post.categories.includes(cat.id)
@@ -127,7 +117,7 @@ export const WordPressCard = ({
 
     return (
       <TouchableRipple
-        key={post.id}
+        key={`${post.id}-${index}`}
         onPress={() =>
           navigate("PostScreen", { title: post.title, id: post.id })
         }

@@ -20,13 +20,14 @@ const HomeContainer = (Comp, rest = {}) =>
 
       this.state = {};
       this.fetchMoreByCategory = this.fetchMoreByCategory.bind(this);
+      this.refreshPost = super.generateHome.bind(this);
     }
 
     UNSAFE_componentWillMount() {
       this._isMounted = false;
     }
 
-    init() {
+    async init() {
       const { appIndex, url, posts } = this.props;
 
       if (posts && posts.data) {
@@ -35,9 +36,9 @@ const HomeContainer = (Comp, rest = {}) =>
       }
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+      await this.init();
       this._isMounted = true;
-      this.init();
     }
 
     componentDidUpdate(prevProps) {
@@ -53,12 +54,12 @@ const HomeContainer = (Comp, rest = {}) =>
       }
     }
 
-    fetchMoreByCategory(cat) {
-      this.fetchPosts({ categories: cat });
+    async fetchMoreByCategory(cat) {
+      this.fetchPosts({ categories: cat, per_page: 10 });
     }
 
     render() {
-      const { fetchMoreByCategory } = this;
+      const { fetchMoreByCategory, refreshPost } = this;
 
       const {
         navigation,
@@ -68,7 +69,7 @@ const HomeContainer = (Comp, rest = {}) =>
         ...rest
       } = this.props;
 
-      var args = { fetchMoreByCategory, categories, ...rest };
+      var args = { fetchMoreByCategory, refreshPost, categories, ...rest };
       args.posts =
         posts && Array.isArray(posts.data)
           ? this.preparePosts(posts.data, appIndex)

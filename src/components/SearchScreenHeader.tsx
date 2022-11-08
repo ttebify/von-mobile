@@ -41,11 +41,17 @@ const SearchScreenHeader = ({
             placeholderTextColor="rgba(245, 245, 245, 0.68)"
             activeUnderlineColor="rgba(245, 245, 245, 0.68)"
             theme={{ colors: { text: "rgba(245, 245, 245, 1)" } }}
+            keyboardType="web-search"
+            onSubmitEditing={() => {
+              if (value.length >= 3) {
+                enterSearch(value);
+              }
+            }}
           />
           <Appbar.Action
             icon="magnify"
             onPress={() => {
-              if (value.length > 3) {
+              if (value.length >= 3) {
                 enterSearch(value);
               }
             }}

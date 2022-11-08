@@ -10,11 +10,16 @@ import { persistor } from "./src/redux/store";
 import FrameBox from "./src/layouts/FrameBox";
 import LoadingComp from "./src/components/LoadingComp";
 import Toast from "react-native-toast-message";
-import { Fragment } from "react";
+import InternetConnectionAlert from "react-native-internet-connection-alert";
 
 export default function App() {
   return (
-    <Fragment>
+    <InternetConnectionAlert
+      onChange={(connectionState) => {
+        console.log("Connection State: ", connectionState);
+      }}
+      type="warn"
+    >
       <Provider>
         <PersistGate
           loading={
@@ -35,6 +40,6 @@ export default function App() {
         </PersistGate>
       </Provider>
       <Toast position="bottom" visibilityTime={5000} />
-    </Fragment>
+    </InternetConnectionAlert>
   );
 }

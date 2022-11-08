@@ -1,10 +1,9 @@
 import { Fragment, useEffect } from "react";
-import { ScrollView, StyleSheet, Text } from "react-native";
+import { RefreshControl, ScrollView, StyleSheet, Text } from "react-native";
 import { Button, Card, Paragraph, TouchableRipple } from "react-native-paper";
 import LoadingComp from "../components/LoadingComp";
 import HomeContainer from "../containers/HomeContainer";
 import { Box } from "../layouts/FlexBox";
-import FrameBox from "../layouts/FrameBox";
 
 export type Categories =
   | "sports"
@@ -12,6 +11,85 @@ export type Categories =
   | "africa"
   | "world"
   | "special event";
+
+/* export const categoryBaseLists = [
+  { id: 8, name: "Africa", slug: "africa" },
+  {
+    id: 10,
+    name: "Agric/Environment",
+    slug: "agric-environment",
+  },
+  {
+    id: 33,
+    name: "Blog",
+    slug: "blog-posts",
+  },
+  {
+    id: 5,
+    name: "Business",
+    slug: "business",
+  },
+  {
+    id: 11,
+    name: "Entertainment/Tourism",
+    slug: "entertainment-tourism",
+  },
+  {
+    id: 2,
+    name: "Featured",
+    slug: "featured",
+  },
+  {
+    id: 7,
+    name: "Health",
+    slug: "health",
+  },
+  {
+    id: 12,
+    name: "News Commentary",
+    slug: "news-commentary",
+  },
+  {
+    id: 3,
+    name: "Nigeria",
+    slug: "nigeria",
+  },
+  {
+    id: 4,
+    name: "Politics",
+    slug: "politics",
+  },
+  {
+    id: 8117,
+    name: "Special Event",
+    slug: "special-event",
+  },
+  {
+    id: 6,
+    name: "Sports",
+    slug: "sports",
+  },
+  {
+    id: 10826,
+    name: "Tech World",
+    slug: "tech-world",
+  },
+  {
+    id: 34,
+    name: "Trending",
+    slug: "trending",
+  },
+  {
+    id: 1,
+    name: "Uncategorized",
+    slug: "uncategorized",
+  },
+  {
+    id: 9,
+    name: "World",
+    slug: "world",
+  },
+]; */
 
 const CategoryViewScreen = ({
   catName,
@@ -21,22 +99,13 @@ const CategoryViewScreen = ({
   fetchMoreByCategory,
   navigation,
 }: {
-  catName: Categories;
+  catName: string;
   [index: string]: any;
 }) => {
-  const { isFetching, data } = categories;
-
-  if (isFetching || !data || data.length === 0) {
-    return (
-      <FrameBox>
-        <LoadingComp />
-      </FrameBox>
-    );
-  }
+  const { data } = categories;
 
   const selectedCat = data.find(
-    (cat: { parent: number; name: string }) =>
-      cat.parent === 0 && cat.name.toLowerCase() === catName
+    (cat) => cat.name.toLowerCase() === catName.toLowerCase()
   );
 
   const filteredPost = posts.filter((post: any) => {
@@ -44,50 +113,50 @@ const CategoryViewScreen = ({
   });
 
   useEffect(() => {
-    if (selectedCat && !isFetching) {
-      fetchMoreByCategory(selectedCat?.id);
+    if (selectedCat) {
+      fetchMoreByCategory(selectedCat.id);
     }
-  }, [selectedCat, isFetching]);
+  }, [selectedCat]); // fetching post
 
   if (filteredPost.length === 0) {
     return (
-      <FrameBox>
-        {fetchingPosts ? (
-          <Text>Please wait...</Text>
-        ) : (
-          <Text>Try to reload</Text>
-        )}
+      <ScrollView
+        style={{ flex: 1 }}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={fetchingPosts}
+            onRefresh={() => fetchMoreByCategory(selectedCat.id)}
+          />
+        }
+      >
         <Box style={{ pMarginLeft: 30, pMarginRight: 30, marginVertical: 10 }}>
-          {fetchingPosts ? (
-            <LoadingComp />
-          ) : (
-            <Box
-              style={{
-                pMarginLeft: 30,
-                pMarginRight: 30,
-                marginVertical: 10,
-              }}
-            >
-              <Button
-                icon="refresh"
-                mode="text"
-                onPress={() => fetchMoreByCategory(selectedCat.id)}
-              >
-                Reload
-              </Button>
-            </Box>
+          {!fetchingPosts && (
+            <Text style={{ textAlign: "center" }}>
+              Sorry, there was a problem loading the news; pull to refresh this
+              page
+            </Text>
           )}
         </Box>
-      </FrameBox>
+      </ScrollView>
     );
   }
 
   const { navigate } = navigation;
   return (
-    <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-      {filteredPost.map((post) => (
+    <ScrollView
+      style={{ flex: 1 }}
+      showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl
+          refreshing={fetchingPosts}
+          onRefresh={() => fetchMoreByCategory(selectedCat.id)}
+        />
+      }
+    >
+      {filteredPost.map((post, index) => (
         <TouchableRipple
-          key={post.key}
+          key={`${post.key}-${index}`}
           onPress={() =>
             navigate("PostScreen", { title: post.title, id: post.id })
           }
@@ -118,15 +187,14 @@ const CategoryViewScreen = ({
         ) : (
           <Box
             style={{
-              pMarginLeft: 30,
-              pMarginRight: 30,
+              marginHorizontal: 30,
               marginVertical: 10,
             }}
           >
             <Button
               icon="refresh"
               mode="text"
-              onPress={() => fetchMoreByCategory(selectedCat.id)}
+              onPress={() => selectedCat && fetchMoreByCategory(selectedCat.id)}
             >
               Load More
             </Button>

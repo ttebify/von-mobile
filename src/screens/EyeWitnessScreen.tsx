@@ -77,6 +77,7 @@ export default function EyeWitnessScreen() {
       .finally(() => {
         setSubmitting(false);
         resetForm();
+        setFieldValue([]);
       });
   };
 
@@ -154,6 +155,7 @@ export default function EyeWitnessScreen() {
               onPress={handleSubmit}
               disabled={!isValid || isSubmitting}
               loading={isSubmitting}
+              color="rgba(4, 98, 171, 1)"
             >
               Send Report
             </Button>

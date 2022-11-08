@@ -9,7 +9,90 @@ import {
   FETCH_API_EDIT,
 } from "./action";
 
-const initialState = {};
+const initialState = {
+  "categories-0": {
+    isFetching: false,
+    offset: 16,
+    data: [
+      { id: 8, name: "Africa", slug: "africa" },
+      {
+        id: 10,
+        name: "Agric/Environment",
+        slug: "agric-environment",
+      },
+      {
+        id: 33,
+        name: "Blog",
+        slug: "blog-posts",
+      },
+      {
+        id: 5,
+        name: "Business",
+        slug: "business",
+      },
+      {
+        id: 11,
+        name: "Entertainment/Tourism",
+        slug: "entertainment-tourism",
+      },
+      {
+        id: 2,
+        name: "Featured",
+        slug: "featured",
+      },
+      {
+        id: 7,
+        name: "Health",
+        slug: "health",
+      },
+      {
+        id: 12,
+        name: "News Commentary",
+        slug: "news-commentary",
+      },
+      {
+        id: 3,
+        name: "Nigeria",
+        slug: "nigeria",
+      },
+      {
+        id: 4,
+        name: "Politics",
+        slug: "politics",
+      },
+      {
+        id: 8117,
+        name: "Special Event",
+        slug: "special-event",
+      },
+      {
+        id: 6,
+        name: "Sports",
+        slug: "sports",
+      },
+      {
+        id: 10826,
+        name: "Tech World",
+        slug: "tech-world",
+      },
+      {
+        id: 34,
+        name: "Trending",
+        slug: "trending",
+      },
+      {
+        id: 1,
+        name: "Uncategorized",
+        slug: "uncategorized",
+      },
+      {
+        id: 9,
+        name: "World",
+        slug: "world",
+      },
+    ],
+  },
+};
 
 const reducer = (
   state = initialState,
@@ -28,7 +111,7 @@ const reducer = (
           [id]: {
             isFetching: true,
             data: [],
-            offset: oldOffset,
+            offset: 0,
           },
         };
       }

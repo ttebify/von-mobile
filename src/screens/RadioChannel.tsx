@@ -1,47 +1,42 @@
-import React, { Fragment, useState } from "react";
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useState } from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
-import { Card, Headline, Subheading, Text } from "react-native-paper";
+import { Headline, IconButton, Subheading, Text } from "react-native-paper";
 import { Col, Row } from "../layouts/FlexBox";
+import AudioWaves from "../../assets/audio-waves.svg";
+import AudioWavesLarge from "../../assets/audio-waves-large.svg";
+import FrameBox from "../layouts/FrameBox";
 
 interface RadioChannel {
   [index: string]: {
     frequency: number;
-    coverImage: any;
   };
 }
 const radioChannelMap: RadioChannel = {
   English: {
     frequency: 98.3,
-    coverImage: require("../../assets/radio-bgs.png"),
   },
   French: {
     frequency: 93.3,
-    coverImage: require("../../assets/radio-bgs.png"),
   },
   Arabic: {
     frequency: 92.3,
-    coverImage: require("../../assets/radio-bgs.png"),
   },
   Kiswahili: {
     frequency: 98.3,
-    coverImage: require("../../assets/radio-bgs.png"),
   },
   Yoruba: {
     frequency: 98,
-    coverImage: require("../../assets/radio-bgs.png"),
   },
   Igbo: {
     frequency: 98.88,
-    coverImage: require("../../assets/radio-bgs.png"),
   },
   Hausa: {
     frequency: 98.3,
-    coverImage: require("../../assets/radio-bgs.png"),
   },
   Fulfude: {
     frequency: 9,
-    coverImage: require("../../assets/radio-bgs.png"),
   },
 };
 
@@ -56,14 +51,20 @@ function RadioChannelScreen() {
   );
 
   return (
-    <Fragment>
-      <View style={{ paddingHorizontal: "3%", paddingVertical: "10%" }}>
+    <View
+      style={{
+        paddingTop: "5%",
+        flex: 1,
+      }}
+    >
+      <View style={{ paddingHorizontal: "3%" }}>
         <DropDownPicker
           multiple={false}
           open={open}
           min={0}
           value={value}
           items={items}
+          disabled
           setOpen={setOpen}
           setValue={setValue}
           setItems={setItems}
@@ -78,15 +79,33 @@ function RadioChannelScreen() {
           }}
           dropDownContainerStyle={{
             backgroundColor: "#fff",
-            borderWidth: 0,
-            borderTopWidth: 1,
             borderColor: "rgba(0, 0, 0, 0.23)",
+            elevation: 5,
           }}
         />
-        <Card.Cover
-          source={radioChannelMap[value].coverImage}
-          style={{ borderRadius: 10, marginVertical: 20, height: "25%" }}
-        />
+      </View>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{ paddingHorizontal: "3%" }}
+        overScrollMode="never"
+      >
+        <LinearGradient
+          colors={["rgba(4, 146, 220, 1)", "rgba(4, 98, 171, 1)"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={[
+            {
+              borderRadius: 10,
+              marginVertical: 20,
+              height: 235,
+            },
+          ]}
+        >
+          <FrameBox>
+            <AudioWavesLarge />
+          </FrameBox>
+        </LinearGradient>
+
         <Headline
           style={{
             textAlign: "center",
@@ -102,16 +121,17 @@ function RadioChannelScreen() {
         >
           {radioChannelMap[value].frequency}
         </Subheading>
-        <ScrollView
-          style={{ borderRadius: 20 }}
-          showsVerticalScrollIndicator={false}
-        >
+        <View>
           {Object.entries(radioChannelMap)
             .filter(([key]) => key !== value)
             .map(([title, value]) => (
               <View
                 key={title}
-                style={{ borderRadius: 10, overflow: "hidden", margin: "2%" }}
+                style={{
+                  borderRadius: 3,
+                  overflow: "hidden",
+                  marginVertical: 6,
+                }}
               >
                 <TouchableOpacity
                   style={{
@@ -127,35 +147,49 @@ function RadioChannelScreen() {
                   onPress={() => {
                     setValue(title);
                   }}
+                  disabled
                 >
                   <Row
                     style={{
                       justifyContent: "space-between",
                       width: "100%",
+                      alignItems: "center",
+                      padding: 10,
                     }}
                   >
                     <Col
                       style={{
-                        margin: 10,
                         justifyContent: "center",
                       }}
                     >
                       <Text style={styles.title}>{title}</Text>
                       <Text style={styles.frequency}>{value.frequency}</Text>
                     </Col>
-                    <View style={{ width: "30%" }}>
-                      <Card.Cover
-                        style={{ flex: 1 }}
-                        source={value.coverImage}
-                      />
-                    </View>
+                    <AudioWaves height={54} width={54} />
                   </Row>
                 </TouchableOpacity>
               </View>
             ))}
-        </ScrollView>
+        </View>
+      </ScrollView>
+      <View style={styles.controlsCOntainer}>
+        <Row style={{ justifyContent: "space-between", alignItems: "center" }}>
+          <IconButton
+            icon="skip-previous"
+            size={35}
+            onPress={() => {}}
+            disabled
+          />
+          <IconButton
+            icon="play-circle"
+            color="rgba(4, 98, 171, 1)"
+            size={35}
+            onPress={() => {}}
+          />
+          <IconButton icon="skip-next" size={35} onPress={() => {}} disabled />
+        </Row>
       </View>
-    </Fragment>
+    </View>
   );
 }
 
@@ -174,5 +208,18 @@ const styles = StyleSheet.create({
     fontSize: 10,
     lineHeight: 12,
     fontWeight: "600",
+  },
+  controlsCOntainer: {
+    backgroundColor: "white",
+    height: 60,
+    paddingHorizontal: "10%",
+    shadowRadius: 2,
+    shadowOffset: {
+      width: 0,
+      height: -3,
+    },
+    shadowColor: "#000000",
+    elevation: 4,
+    marginTop: 1,
   },
 });

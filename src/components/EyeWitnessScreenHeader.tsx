@@ -21,7 +21,7 @@ const EyeWitnessScreenHeader = ({ navigation, options }: any) => {
             color="white"
             size={30}
           />
-          <Text style={styles.text}>Eye Witness</Text>
+          <Text style={styles.text}>Eye Witness Report</Text>
         </View>
       </View>
     </SafeAreaView>

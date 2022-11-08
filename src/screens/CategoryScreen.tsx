@@ -7,6 +7,7 @@ import {
   View,
 } from "react-native";
 import { Card, Paragraph } from "react-native-paper";
+import { allowedCategoryLists } from "../components/DrawerComp";
 import LoadingComp from "../components/LoadingComp";
 import HomeContainer from "../containers/HomeContainer";
 import theme from "../customTheme";
@@ -17,16 +18,17 @@ const { colors } = theme();
 const CategoryThumbnailList = ({ posts, navigation, categories }: any) => {
   const { navigate } = navigation;
 
-  const showFirstPosts = categories.data.map((category: any) => {
-    const post = posts.find(
-      (p: any) => category.parent === 0 && p.categories.includes(category.id)
-    );
+  const showFirstPosts = categories.data.map((category: any, index) => {
+    const post = posts.find((p: any) => p.categories.includes(category.id));
+
+    const route = category.name;
+    const screenName = allowedCategoryLists.includes(route) ? route : "Others";
 
     if (!post) return null;
 
     return (
       <TouchableOpacity
-        key={post.id}
+        key={`${post.id}-${index}`}
         style={{
           height: 130,
           marginVertical: 8,
@@ -39,7 +41,7 @@ const CategoryThumbnailList = ({ posts, navigation, categories }: any) => {
           borderRadius: 8,
           overflow: "hidden",
         }}
-        onPress={() => navigate(category.name)}
+        onPress={() => navigate(screenName, { categoryName: route })}
         activeOpacity={0.8}
       >
         <View style={{ flex: 1, flexDirection: "row" }}>

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { ScrollView } from "react-native";
+import { RefreshControl, ScrollView } from "react-native";
 import {
   WordPressCard,
   WordPressThumbnailList,
@@ -7,7 +7,13 @@ import {
 import { WordPressCardSlide } from "../components/WordPressCardSlide";
 import HomeContainer from "../containers/HomeContainer";
 
-const LatestPostScreen = ({ posts, navigation, categories }) => {
+const LatestPostScreen = ({
+  posts,
+  navigation,
+  isFetching,
+  categories,
+  refreshPost,
+}) => {
   const args = { navigation, categories };
 
   useEffect(() => {
@@ -24,7 +30,13 @@ const LatestPostScreen = ({ posts, navigation, categories }) => {
   }, [navigation]);
 
   return (
-    <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      style={{ flex: 1 }}
+      showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl refreshing={isFetching} onRefresh={refreshPost} />
+      }
+    >
       <WordPressCardSlide posts={posts.slice(0, 5)} {...args} />
       <WordPressCard posts={posts} offset={1} {...args} />
       <WordPressThumbnailList posts={posts} offset={1} {...args} />

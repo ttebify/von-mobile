@@ -139,7 +139,7 @@ class WordPressClass extends React.Component {
 
   fetchCategories(obj = {}) {
     var {
-      per_page = 50,
+      per_page = 30,
       orderby = "count",
       order = "desc",
       hide_empty = true,
@@ -470,12 +470,13 @@ class WordPressClass extends React.Component {
     });
   }
 
-  generateHome() {
-    const { gState } = this.props;
+  async generateHome() {
+    const { gState, categories } = this.props;
+    const ids = categories.data.map((cat) => cat.id);
 
     //check if current_site exists
     this.getCategories();
-    this.fetchPosts();
+    await this.fetchPosts({ categories: ids });
   }
 
   UNSAFE_componentWillMount() {

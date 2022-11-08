@@ -272,9 +272,9 @@ const Post = ({
         >
           You Might Also Like
         </Text>
-        {relatedPosts.map((post) => (
+        {relatedPosts.map((post, index) => (
           <TouchableOpacity
-            key={post.key}
+            key={`${post.key}-${index}`}
             style={{
               height: 120,
               marginVertical: 5,

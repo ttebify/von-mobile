@@ -25,7 +25,7 @@ function SearchScreen({
   const [loading, setLoading] = useState(false);
   const { navigate } = navigation;
 
-  const showPosts = searchedPosts.map((post: any) => {
+  const showPosts = searchedPosts.map((post: any, index) => {
     const cats = categories.filter(
       (cat: { parent: number; name: string; id: number }) =>
         cat.parent === 0 && post.categories.includes(cat.id)
@@ -33,7 +33,7 @@ function SearchScreen({
 
     return (
       <Card
-        key={post.key}
+        key={`${post.key}-${index}`}
         style={{
           height: 150,
           marginVertical: 5,
