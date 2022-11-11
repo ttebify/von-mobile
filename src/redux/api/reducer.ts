@@ -1,3 +1,4 @@
+import { arrayUnique } from "../../utils";
 import {
   FETCH_API_REQUEST,
   FETCH_API_SUCCESS,
@@ -100,7 +101,9 @@ const reducer = (
 ) => {
   const { id, type, payload } = action;
 
-  var oldData = state && state[id] && state[id].data ? state[id].data : [];
+  var oldData: any[] =
+    state && state[id] && state[id].data ? state[id].data : [];
+  var halfOldData = oldData.length > 90 ? oldData.slice(0, 50) : oldData;
   var oldOffset = state && state[id] && state[id].offset ? state[id].offset : 0;
 
   switch (type) {
@@ -151,7 +154,7 @@ const reducer = (
         ...state,
         [id]: {
           isFetching: false,
-          data: [...oldData, ...newData],
+          data: arrayUnique([...halfOldData, ...newData]),
           offset: oldOffset + count,
         },
       };
@@ -169,7 +172,7 @@ const reducer = (
         ...state,
         [id]: {
           isFetching: false,
-          data: [...oldData, ...newData],
+          data: arrayUnique([...oldData, ...newData]),
           offset: oldOffset + count,
         },
       };
@@ -187,7 +190,7 @@ const reducer = (
         ...state,
         [id]: {
           isFetching: false,
-          data: [...newData, ...oldData],
+          data: arrayUnique([...newData, ...oldData]),
           offset: oldOffset + count,
         },
       };

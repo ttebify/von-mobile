@@ -93,30 +93,14 @@ const DrawerComp = ({ navigation }: any) => {
           }}
           {...contentOptions}
         />
-        <DrawerItem
-          label="Privacy Policy"
-          onPress={() => {
-            navigation.closeDrawer();
-            // navigate("PrivacyPolicyPage");
-          }}
-          {...contentOptions}
-        />
-        <DrawerItem
+        {/* <DrawerItem
           label="Settings"
           onPress={() => {
             navigation.closeDrawer();
             // navigate("SettingsPage");
           }}
           {...contentOptions}
-        />
-        <DrawerItem
-          label="Contact Us"
-          onPress={() => {
-            navigation.closeDrawer();
-            // navigate("ContactUsPage");
-          }}
-          {...contentOptions}
-        />
+        /> */}
       </DrawerContentScrollView>
     </LinearGradient>
   );

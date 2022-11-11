@@ -115,10 +115,9 @@ export const postApi = (url = "", obj = {}, id = "postApi") => {
     dispatch(fetchApiRequest(id));
 
     return axios
-      .post(`${URL}${url}`, { ...data }, { headers })
+      .post(url, { ...data }, { headers })
       .then((res) => {
         dispatch(fetchApiSuccess(id, res.data));
-
         return res;
       })
       .catch((error) => {
@@ -169,6 +168,8 @@ export const getApi = (
     let args = cancel ? { cancelToken: cancel.token } : {};
 
     args.headers = headers;
+
+    console.log(`${url}?${params}`);
 
     return axios
       .get(`${url}?${params}`, args)

@@ -1,59 +1,145 @@
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useState } from "react";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
-import { Headline, IconButton, Subheading, Text } from "react-native-paper";
+import { Headline, IconButton, Text } from "react-native-paper";
 import { Col, Row } from "../layouts/FlexBox";
 import AudioWaves from "../../assets/audio-waves.svg";
-import AudioWavesLarge from "../../assets/audio-waves-large.svg";
 import FrameBox from "../layouts/FrameBox";
+import { Audio, AVPlaybackStatus } from "expo-av";
+import LoadingComp from "../components/LoadingComp";
 
 interface RadioChannel {
-  [index: string]: {
-    frequency: number;
-  };
+  [index: string]: {};
 }
 const radioChannelMap: RadioChannel = {
-  English: {
-    frequency: 98.3,
-  },
-  French: {
-    frequency: 93.3,
-  },
-  Arabic: {
-    frequency: 92.3,
-  },
-  Kiswahili: {
-    frequency: 98.3,
-  },
-  Yoruba: {
-    frequency: 98,
-  },
-  Igbo: {
-    frequency: 98.88,
-  },
-  Hausa: {
-    frequency: 98.3,
-  },
-  Fulfude: {
-    frequency: 9,
-  },
+  "VON English Broadcast": {},
+  French: {},
+  Arabic: {},
+  Kiswahili: {},
+  Yoruba: {},
+  Igbo: {},
+  Hausa: {},
+  Fulfude: {},
 };
+
+Audio.setAudioModeAsync({
+  allowsRecordingIOS: false,
+  staysActiveInBackground: true,
+  // interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DUCK_OTHERS,
+  playsInSilentModeIOS: true,
+  shouldDuckAndroid: true,
+  // interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
+  playThroughEarpieceAndroid: true,
+});
 
 function RadioChannelScreen() {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("English");
+  const [value, setValue] = useState("VON English Broadcast");
   const [items, setItems] = useState(
     Object.keys(radioChannelMap).map((key: string) => ({
       label: key,
       value: key,
     }))
   );
+  const [playing, setPlaying] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [, setLoaded] = useState(false);
+
+  const sound = useRef(new Audio.Sound());
+
+  const loadAudio = async () => {
+    setLoading(true);
+    const checkLoading = await sound.current.getStatusAsync();
+    if (checkLoading.isLoaded === false) {
+      try {
+        const result = await sound.current.loadAsync(
+          {
+            uri: "http://50.116.99.96:8000/stream",
+          },
+          {
+            isLooping: false,
+          },
+          false
+        );
+
+        if (result.isLoaded === false) {
+          setLoading(false);
+          setLoaded(false);
+        } else {
+          sound.current.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+          setLoading(false);
+          setLoaded(true);
+          const result = await sound.current.getStatusAsync();
+          if (result.isLoaded) {
+            if (result.isPlaying === false) {
+              sound.current.playAsync();
+              setPlaying(true);
+            }
+          }
+        }
+      } catch (error) {
+        setLoading(false);
+        setLoaded(false);
+      }
+    } else {
+      setLoading(false);
+      setLoaded(true);
+    }
+  };
+
+  const pauseAudio = async () => {
+    try {
+      const result = await sound.current.getStatusAsync();
+      if (result.isLoaded) {
+        if (result.isPlaying === true) {
+          sound.current.unloadAsync();
+          setPlaying(false);
+        }
+      }
+    } catch (error) {
+      setPlaying(true);
+    }
+  };
+
+  const onPlaybackStatusUpdate = (playbackStatus: AVPlaybackStatus) => {
+    if (!playbackStatus.isLoaded) {
+      setLoaded(false);
+      if (playbackStatus.error) {
+        console.log(
+          `Encountered a fatal error during playback: ${playbackStatus.error}`
+        );
+        // Send Expo team the error on Slack or the forums so we can help you debug!
+      }
+    } else {
+      setLoaded(true);
+
+      if (playbackStatus.isPlaying) {
+        setPlaying(true);
+      } else {
+        setPlaying(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    loadAudio();
+
+    return () => {
+      sound.current.unloadAsync();
+    };
+  }, []);
 
   return (
     <View
       style={{
-        paddingTop: "5%",
+        paddingTop: "3%",
         flex: 1,
       }}
     >
@@ -102,7 +188,10 @@ function RadioChannelScreen() {
           ]}
         >
           <FrameBox>
-            <AudioWavesLarge />
+            <Image
+              source={require("../../assets/adaptive-icon.png")}
+              style={{ width: 200, height: 200 }}
+            />
           </FrameBox>
         </LinearGradient>
 
@@ -116,21 +205,45 @@ function RadioChannelScreen() {
         >
           {value}
         </Headline>
-        <Subheading
-          style={{ textAlign: "center", color: "rgba(4, 146, 220, 1)" }}
-        >
-          {radioChannelMap[value].frequency}
-        </Subheading>
+        <View style={styles.controlsCOntainer}>
+          <Row
+            style={{ justifyContent: "space-between", alignItems: "center" }}
+          >
+            <IconButton
+              icon="skip-previous"
+              size={35}
+              onPress={() => {}}
+              disabled
+            />
+            {loading ? (
+              <LoadingComp />
+            ) : (
+              <IconButton
+                icon={playing ? "pause-circle" : "play-circle"}
+                color="rgba(4, 98, 171, 1)"
+                size={35}
+                onPress={playing ? pauseAudio : loadAudio}
+              />
+            )}
+            <IconButton
+              icon="skip-next"
+              size={35}
+              onPress={() => {}}
+              disabled
+            />
+          </Row>
+        </View>
         <View>
           {Object.entries(radioChannelMap)
             .filter(([key]) => key !== value)
-            .map(([title, value]) => (
+            .map(([title]) => (
               <View
                 key={title}
                 style={{
                   borderRadius: 3,
                   overflow: "hidden",
                   marginVertical: 6,
+                  opacity: 0.7,
                 }}
               >
                 <TouchableOpacity
@@ -163,32 +276,14 @@ function RadioChannelScreen() {
                       }}
                     >
                       <Text style={styles.title}>{title}</Text>
-                      <Text style={styles.frequency}>{value.frequency}</Text>
                     </Col>
-                    <AudioWaves height={54} width={54} />
+                    <AudioWaves height={34} width={34} />
                   </Row>
                 </TouchableOpacity>
               </View>
             ))}
         </View>
       </ScrollView>
-      <View style={styles.controlsCOntainer}>
-        <Row style={{ justifyContent: "space-between", alignItems: "center" }}>
-          <IconButton
-            icon="skip-previous"
-            size={35}
-            onPress={() => {}}
-            disabled
-          />
-          <IconButton
-            icon="play-circle"
-            color="rgba(4, 98, 171, 1)"
-            size={35}
-            onPress={() => {}}
-          />
-          <IconButton icon="skip-next" size={35} onPress={() => {}} disabled />
-        </Row>
-      </View>
     </View>
   );
 }
@@ -213,13 +308,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     height: 60,
     paddingHorizontal: "10%",
-    shadowRadius: 2,
-    shadowOffset: {
-      width: 0,
-      height: -3,
-    },
-    shadowColor: "#000000",
-    elevation: 4,
-    marginTop: 1,
+    marginVertical: 20,
+    borderRadius: 30,
   },
 });

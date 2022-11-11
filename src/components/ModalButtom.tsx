@@ -1,5 +1,6 @@
 import {
   Modal,
+  RefreshControl,
   ScrollView,
   StyleProp,
   StyleSheet,
@@ -18,6 +19,8 @@ export type ModalBottomProps = {
   containerStyle?: StyleProp<ViewStyle>; // Make it cutomizable
   modalTitle: string;
   modalFooter: React.ReactNode;
+  fetchingComments: boolean;
+  refreshComments: () => void;
 };
 
 const ModalBottom = ({
@@ -27,6 +30,8 @@ const ModalBottom = ({
   containerStyle,
   modalTitle,
   modalFooter,
+  fetchingComments,
+  refreshComments,
 }: ModalBottomProps) => {
   const dismiss = () => setVisible(false);
 
@@ -43,14 +48,12 @@ const ModalBottom = ({
       visible={visible}
       transparent
       presentationStyle="overFullScreen"
-      // The onRequestClose callback is called when the user taps the hardware back button on Android or the menu button on Apple TV.
       onRequestClose={dismiss}
     >
       <View style={styles.viewWrapper}>
         <Row
           style={{
-            paddingVertical: 12,
-            paddingRight: "6%",
+            padding: 12,
             borderBottomWidth: 1,
             borderColor: "rgba(4, 80, 139, 0.19)",
           }}
@@ -59,7 +62,11 @@ const ModalBottom = ({
             size={20}
             icon="close"
             color="rgba(4, 80, 139, 0.19)"
-            style={{ borderWidth: 1, borderColor: "rgba(4, 80, 139, 0.19)" }}
+            style={{
+              borderWidth: 1,
+              borderColor: "rgba(4, 80, 139, 0.19)",
+              margin: 0,
+            }}
             onPress={dismiss}
           />
           <Text
@@ -67,7 +74,7 @@ const ModalBottom = ({
               fontSize: 14,
               textAlign: "left",
               fontWeight: "300",
-              paddingRight: 20,
+              paddingHorizontal: 10,
             }}
           >
             {modalTitle}
@@ -76,6 +83,12 @@ const ModalBottom = ({
         <ScrollView
           style={[styles.modalView, containerStyle]}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={fetchingComments}
+              onRefresh={refreshComments}
+            />
+          }
         >
           {children}
         </ScrollView>

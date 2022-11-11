@@ -32,9 +32,11 @@ export const WordPressThumbnailList = ({
         key={`${post.key}-${index}`}
         style={{
           height: 110,
-          marginVertical: 5,
+          marginVertical: 6,
           marginHorizontal: "4%",
           elevation: 2,
+          shadowColor: "rgba(0, 0, 0, 0.04)",
+          overflow: "hidden",
         }}
       >
         <TouchableOpacity
@@ -81,7 +83,7 @@ export const WordPressThumbnailList = ({
               <Paragraph style={styles.date}>{post.date}</Paragraph>
             </View>
           </View>
-          <View style={{ width: "45%", margin: 2 }}>
+          <View style={{ width: "45%" }}>
             <Card.Cover
               style={{ flex: 1 }}
               source={{ uri: post.media.full.source_url }}
@@ -112,7 +114,7 @@ export const WordPressCard = ({
   const showPosts = slice(posts).map((post, index) => {
     const cats = data.filter(
       (cat: { parent: number; name: string; id: number }) =>
-        cat.parent === 0 && post.categories.includes(cat.id)
+        post.categories.includes(cat.id)
     );
 
     return (
@@ -136,7 +138,7 @@ export const WordPressCard = ({
             style={{ height: 192 }}
           />
           <Card.Content style={styles.container}>
-            <Row style={{ marginBottom: 10 }}>
+            <Row style={{ marginBottom: 5 }}>
               {cats.map((c: any) => (
                 <View
                   key={c.id}
@@ -185,6 +187,6 @@ const styles = StyleSheet.create({
     fontWeight: "400",
   },
   container: {
-    padding: "5%",
+    padding: 10,
   },
 });

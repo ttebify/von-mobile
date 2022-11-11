@@ -1,6 +1,9 @@
+import type { Comment } from "../../types";
+
 export const ADD_TO_BOOKMARK = "ADD_TO_BOOKMARK";
 export const REMOVE_FROM_BOOKMARK = "REMOVE_FROM_BOOKMARK";
 export const CLEAR_BOOKMARK = "CLEAR_BOOKMARK";
+export const ADD_COMMENT = "ADD_COMMENT";
 
 const _addToBookmark = (id: number) => ({
   type: ADD_TO_BOOKMARK,
@@ -14,6 +17,11 @@ const _removeFromBookmark = (id: number) => ({
 
 const _clearBookmark = () => ({
   type: CLEAR_BOOKMARK,
+});
+
+const _addComment = (data: { postId: number; comment: Comment }) => ({
+  type: ADD_COMMENT,
+  payload: data,
 });
 
 export const clearBookmark = () => (dispatch: any) =>
@@ -30,3 +38,8 @@ export const addToBookmark = (id: number) => (dispatch: any) => {
 
   return Promise.resolve();
 };
+
+export const addComment =
+  (data: { postId: number; comment: Comment }) => (dispatch: any) => {
+    dispatch(_addComment(data));
+  };

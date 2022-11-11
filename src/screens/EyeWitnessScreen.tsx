@@ -1,15 +1,44 @@
 import React, { Fragment, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Platform, ScrollView, StyleSheet, View } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import ImageInputList from "../components/ImageInputList";
 import Spacer from "../components/Spacer";
 import * as Yup from "yup";
 import { Formik, FormikHelpers } from "formik";
-import axios from "axios";
 import Toast from "react-native-toast-message";
+import * as ImagePicker from "expo-image-picker";
+
+type ImageInfo = ImagePicker.ImageInfo;
+
+const getImageType = (uri) => {
+  const type = "image";
+  const ext = uri.slice(-4);
+
+  if (ext.match(/.[a-z]{3,4}$/)) {
+    return `${type}/${ext.slice(1)}`;
+  } else {
+    return `${type}/jpg`;
+  }
+};
+
+const buildImageObj = (imageObj: ImageInfo) => {
+  const { uri, type, ...rest } = imageObj;
+
+  const search = imageObj.uri.match(/\/([a-zA-Z0-9\s\._-]+.[a-z]{3,4})$/);
+  const fileName = search ? search[1] : "attachment";
+  return {
+    uri:
+      Platform.OS === "android"
+        ? imageObj.uri
+        : imageObj.uri.replace("file://", ""),
+    type: getImageType(imageObj.uri),
+    name: fileName,
+    ...rest,
+  };
+};
 
 export default function EyeWitnessScreen() {
-  const [imageObjects, setFieldValue] = useState<any[]>([]);
+  const [imageObjects, setFieldValue] = useState<ImageInfo[]>([]);
 
   const initialValues = {
     email: "",
@@ -19,15 +48,17 @@ export default function EyeWitnessScreen() {
   };
 
   const ValidationSchema = Yup.object().shape({
-    email: Yup.string().email("Invalid email").required(),
+    email: Yup.string().email("Invalid email").required().trim(),
     name: Yup.string()
       .min(3, "Should not be less than 3 characters")
-      .required(),
+      .required()
+      .trim(),
     subject: Yup.string()
       .min(5, "Should not be less than 5 characters")
       .max(200)
-      .required(),
-    details: Yup.string().nullable(),
+      .required()
+      .trim(),
+    details: Yup.string().nullable().trim(),
   });
 
   const handleAdd = (imageObj) => {
@@ -55,29 +86,49 @@ export default function EyeWitnessScreen() {
       details: string;
     }>
   ) => {
+    const formData = new FormData();
+
+    for (const [key, value] of Object.entries(values)) {
+      formData.append(key, value);
+    }
+
+    imageObjects.forEach((imageObj) =>
+      formData.append("attachments[]", buildImageObj(imageObj))
+    );
+
     // const body = JSON.stringify(values);
-    axios
-      .post(
-        "https://baffiloyalty.regects.com/api/customer/auth/sendmail/test",
-        values,
-        { timeout: 8000 }
-      )
-      .then(() => {
-        Toast.show({
-          type: "success",
-          text1: "Sent",
-          text2: "Your Report has been sent.",
-          bottomOffset: 20,
-        });
-        resetForm();
+    fetch("https://baffiloyalty.regects.com/api/customer/auth/sendmail/test", {
+      body: formData,
+      method: "POST",
+    })
+      .then(async (response) => {
+        const result = await response.json();
+        const { status } = result;
+
+        if (status === "success") {
+          Toast.show({
+            type: "success",
+            text1: "Sent",
+            text2: "Your Report has been sent.",
+            bottomOffset: 20,
+          });
+          resetForm();
+          setFieldValue([]);
+        }
       })
       .catch((err: Error) => {
-        console.error(err.message);
+        console.error(err);
+        Toast.show({
+          type: "error",
+          text1: "Failed ",
+          text2:
+            "The attempt to send your request was unsuccessful for some reason. Please try once more.",
+          bottomOffset: 20,
+          visibilityTime: 3000,
+        });
       })
       .finally(() => {
         setSubmitting(false);
-        resetForm();
-        setFieldValue([]);
       });
   };
 
@@ -98,7 +149,7 @@ export default function EyeWitnessScreen() {
         }) => (
           <Fragment>
             <TextInput
-              label={errors.name ?? "Full Name"}
+              label={errors.name ?? "Full name"}
               value={values.name}
               onChangeText={handleChange("name")}
               style={styles.textInput}

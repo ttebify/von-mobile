@@ -22,8 +22,6 @@ const API_KEY = "AIzaSyBGn-myMPW6x7kAxQ10muNCMqrkbcJFcPs";
 
 const Videos = ({ isFetching, playlistId }: any) => {
   const [videos, setVideo] = useState<any[]>([]);
-  //   const [like, setLike] = useState<any>([]);
-  //   const [comment, setComment] = useState<any>([]);
   const [view, setView] = useState([]);
 
   async function videoAPI() {
@@ -36,7 +34,7 @@ const Videos = ({ isFetching, playlistId }: any) => {
       },
     });
 
-    setVideo(items.items);
+    setVideo(items.items.reverse());
   }
 
   async function detailAPI() {

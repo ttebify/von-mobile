@@ -55,7 +55,7 @@ const HomeContainer = (Comp, rest = {}) =>
     }
 
     async fetchMoreByCategory(cat) {
-      this.fetchPosts({ categories: cat, per_page: 10 });
+      this.fetchPosts({ categories: cat, per_page: 8 });
     }
 
     render() {

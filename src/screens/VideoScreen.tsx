@@ -27,18 +27,21 @@ function VideoScreen({ videos, isFetching, navigation }: any) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <FlatList
-        data={videos}
+        data={videos.reverse()}
         keyExtractor={(_, index) => index.toString()}
         renderItem={({ item }) => (
           <Card
             key={item.key}
             style={{
-              height: 200,
+              height: 180,
               width: "96%",
               marginHorizontal: "2%",
               marginVertical: 10,
               position: "relative",
               flex: 1,
+              borderRadius: 10,
+              overflow: "hidden",
+              elevation: 4,
             }}
           >
             <Card.Cover

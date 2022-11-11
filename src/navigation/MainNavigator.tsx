@@ -4,7 +4,6 @@ import PostScreen from "../screens/PostScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import VideoScreen from "../screens/VideoScreen";
 import DrawerComp from "../components/DrawerComp";
-import BottomTabBar from "../components/ButtomTabBar";
 import CategoryScreen from "../screens/CategoryScreen";
 import PostScreenHeader from "../components/PostScreenHeader";
 import BookmarkScreen from "../screens/BookmarkScreen";
@@ -14,7 +13,7 @@ import SearchScreenHeader from "../components/SearchScreenHeader";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import LatestPostScreen from "../screens/LatestPostScreen";
 import CategoryViewScreen from "../screens/CategoryViewScreen";
-import { Appbar } from "react-native-paper";
+import { Appbar, Avatar } from "react-native-paper";
 import { NewsTabBar } from "../components/NewsTabBar";
 import RadioChannelScreen from "../screens/RadioChannel";
 import EyeWitnessScreen from "../screens/EyeWitnessScreen";
@@ -22,6 +21,7 @@ import EyeWitnessScreenHeader from "../components/EyeWitnessScreenHeader";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import VideosScreen from "../screens/VideosScreen";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import FrameBox from "../layouts/FrameBox";
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -109,7 +109,6 @@ const AppNavigator = () => (
       name="Live"
       component={RadioChannelScreen}
       options={{
-        tabBarStyle: { display: "none" },
         tabBarIcon: ({ focused, size }) => (
           <MaterialCommunityIcons
             name="radio-tower"
@@ -207,19 +206,19 @@ function HomeNavigator() {
       id="TopTab"
       tabBar={NewsTabBar}
       screenOptions={{
-        // lazy: true,
+        lazy: true,
         tabBarBounces: true,
         animationEnabled: true,
 
-        // lazyPreloadDistance: 1,
-        /* lazyPlaceholder: () => (
+        lazyPreloadDistance: 3,
+        lazyPlaceholder: () => (
           <FrameBox>
             <Avatar.Image
               size={30}
               source={require("../../assets/von-small-logo.png")}
             />
           </FrameBox>
-        ), */
+        ),
       }}
     >
       <TopTab.Screen name="Latest" component={LatestPostScreen} />

@@ -2,21 +2,14 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Share, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import PostContainer from "../containers/PostContainer";
 import { default as Box } from "../layouts/ResponsiveBox";
-import {
-  Card,
-  Title,
-  Paragraph,
-  Button,
-  TextInput,
-  IconButton,
-} from "react-native-paper";
+import { Card, Title, Paragraph, Button } from "react-native-paper";
 import HTML from "react-native-render-html";
 import { width } from "../layouts/dimensions";
 import theme from "../customTheme";
 import { Row } from "../layouts/FlexBox";
 import ModalBottom from "./ModalButtom";
-import FrameBox from "../layouts/FrameBox";
-import LoadingComp from "./LoadingComp";
+import PostComments from "./comments/PostCommentComp";
+import CommentTextBox from "./comments/CommentTextBox";
 
 const tagsStyles = {
   body: {
@@ -25,70 +18,6 @@ const tagsStyles = {
     color: "rgba(0, 0, 0, 0.87)",
     fontWeight: "400" as const,
   },
-};
-
-interface CommentProps {
-  comments: any[];
-  fetching: boolean;
-  fetchCommentsHandler: () => void;
-}
-const PostComments = ({
-  comments,
-  fetching,
-  fetchCommentsHandler,
-}: CommentProps) => {
-  if (fetching) {
-    return (
-      <FrameBox style={{ padding: 30 }}>
-        <LoadingComp />
-        <Text>Fetching comments...</Text>
-      </FrameBox>
-    );
-  } else if (!fetching && comments.length === 0) {
-    return (
-      <View style={{ padding: 30 }}>
-        <Text style={{ textAlign: "center", marginVertical: 10 }}>
-          There are currently no approved comments for this post.
-        </Text>
-        <Button
-          icon="refresh"
-          mode="outlined"
-          uppercase={false}
-          onPress={fetchCommentsHandler}
-        >
-          Fetch comments
-        </Button>
-      </View>
-    );
-  } else
-    return (
-      <View>
-        {comments.map((comment) => (
-          <Card key={comment.id} style={{ marginBottom: 20 }}>
-            <Card.Title
-              title={comment.author}
-              subtitle={comment.date}
-              titleStyle={{ fontWeight: "400", color: "rgba(0, 0, 0, 0.78)" }}
-            />
-            <Card.Content>
-              <Paragraph>{comment.content}</Paragraph>
-              <Row>
-                <Button
-                  icon="reply"
-                  mode="text"
-                  onPress={() => {}}
-                  style={styles.actionButtons}
-                  labelStyle={{ fontSize: 14 }}
-                  uppercase={false}
-                >
-                  Reply
-                </Button>
-              </Row>
-            </Card.Content>
-          </Card>
-        ))}
-      </View>
-    );
 };
 
 let checker = (arr: any[], target: any[]) =>
@@ -100,13 +29,14 @@ const Post = ({
   fetchPostsByCategory,
   fetchPostComments,
   isFetchingComments,
+  postComment,
+  addComment,
   navigation,
   comments,
 }) => {
   const [relatedPosts, setRelatedPosts] = useState<any[]>([]);
   const [request, setRequest] = useState(0);
   const [commentModalVisible, setModalVisible] = useState(false);
-  const [text, setText] = React.useState("");
 
   const { navigate } = navigation;
 
@@ -228,32 +158,16 @@ const Post = ({
           borderTopLeftRadius: 10,
           borderTopRightRadius: 10,
         }}
-        modalTitle={`Comments on ${title}`}
+        modalTitle={`Comments on: ${title}`}
         modalFooter={
-          <Row style={{ position: "relative" }}>
-            <TextInput
-              mode="outlined"
-              label="Add your comment"
-              value={text}
-              onChangeText={(text) => setText(text)}
-              multiline
-              numberOfLines={4}
-              style={{ width: "100%" }}
-            />
-            <IconButton
-              icon="send"
-              size={30}
-              style={{
-                position: "absolute",
-                top: "25%",
-                right: 10,
-                zIndex: 100,
-              }}
-              onPress={() => {}}
-              color="#5F6368"
-            />
-          </Row>
+          <CommentTextBox
+            postCommtentHandler={postComment}
+            postId={postId}
+            addToOfflineComment={addComment}
+          />
         }
+        fetchingComments={isFetchingComments}
+        refreshComments={() => fetchPostComments(postId)}
       >
         <PostComments
           comments={comments}
@@ -261,7 +175,6 @@ const Post = ({
           fetchCommentsHandler={() => fetchPostComments(postId)}
         />
       </ModalBottom>
-
       <View>
         <Text
           style={{
