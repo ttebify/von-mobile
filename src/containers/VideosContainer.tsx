@@ -12,14 +12,19 @@ const VideosContainer = (Comp: any) =>
       super(props);
 
       this.state = {};
+      this.fetchLatestVideos = this.fetchLatestVideos.bind(this);
     }
 
     init() {
-      const { videos } = this.props;
+      const { videos, latestVideos } = this.props;
 
       if (videos && videos.data) {
       } else {
         this.fetchPlaylistData();
+      }
+      if (latestVideos && latestVideos.data) {
+      } else {
+        this.fetchLatestVideos();
       }
     }
 
@@ -46,13 +51,24 @@ const VideosContainer = (Comp: any) =>
     }
 
     render() {
-      const { navigation, videos = [], ...rest } = this.props;
+      const { fetchLatestVideos } = this;
+      const {
+        navigation,
+        videos = [],
+        latestVideos = [],
+        ...rest
+      } = this.props;
 
-      var args = { ...rest, isFetching: true };
+      var args = { ...rest, isFetching: true, fetchLatestVideos };
 
       args.videos =
         videos && Array.isArray(videos.data)
           ? this.prepareVideos(videos.data)
+          : [];
+
+      args.latestVideos =
+        latestVideos && Array.isArray(latestVideos.data)
+          ? this.prepareLatestVideos(latestVideos.data)
           : [];
 
       if (navigation) {
@@ -60,6 +76,9 @@ const VideosContainer = (Comp: any) =>
       }
       if (videos) {
         args.isFetching = videos.isFetching;
+      }
+      if (latestVideos) {
+        args.fetchingLatestVideos = latestVideos.isFetching;
       }
 
       return <Comp {...args} />;
@@ -72,6 +91,7 @@ const mapStateToProps = (state: any) => {
   return {
     url: state.globalState.url,
     videos: state.api[`videos-${appIndex}`],
+    latestVideos: state.api["latest-videos"],
     appIndex,
   };
 };

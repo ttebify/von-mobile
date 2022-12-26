@@ -1,7 +1,8 @@
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Image,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -65,6 +66,7 @@ function RadioChannelScreen() {
           },
           {
             isLooping: false,
+            volume: 1.0,
           },
           false
         );
@@ -128,14 +130,6 @@ function RadioChannelScreen() {
     }
   };
 
-  useEffect(() => {
-    loadAudio();
-
-    return () => {
-      sound.current.unloadAsync();
-    };
-  }, []);
-
   return (
     <View
       style={{
@@ -174,6 +168,9 @@ function RadioChannelScreen() {
         showsVerticalScrollIndicator={false}
         style={{ paddingHorizontal: "3%" }}
         overScrollMode="never"
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={loadAudio} />
+        }
       >
         <LinearGradient
           colors={["rgba(4, 146, 220, 1)", "rgba(4, 98, 171, 1)"]}

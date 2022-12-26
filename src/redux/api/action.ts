@@ -169,7 +169,7 @@ export const getApi = (
 
     args.headers = headers;
 
-    console.log(`${url}?${params}`);
+    // console.log(`${url}?${params}`);
 
     return axios
       .get(`${url}?${params}`, args)

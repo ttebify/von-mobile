@@ -6,6 +6,6 @@ export type AppNavigatorList = {
 export type BottomTabsNavigatorList = {
   Home: undefined;
   Video: undefined;
-  Live: undefined;
+  Radio: undefined;
   Categories: undefined;
 };

@@ -36,6 +36,51 @@ class YoutubeVideoListClass extends React.Component<any> {
     );
   };
 
+  fetchLatestVideos = async () => {
+    let { getApi } = this.props;
+    const apiId = "latest-videos";
+    const { CHANNEL_ID, API_KEY, URL } = this;
+
+    // TODO: add cancel token
+    return getApi(
+      `${URL}/search`,
+      {
+        channelId: CHANNEL_ID,
+        maxResults: 5,
+        part: "snippet",
+        order: "date",
+        type: "video",
+        key: API_KEY,
+      },
+      apiId
+    );
+  };
+
+  prepareLatestVideo(video = {}, key = 0) {
+    const id = dotProp.get(video, "id.videoId", "no-id");
+    const title = dotProp.get(video, "snippet.title", "");
+    const description = dotProp.get(video, "snippet.description", "");
+    const date = dotProp.get(video, "snippet.publishTime", new Date());
+    const media = dotProp.get(video, "snippet.thumbnails", {});
+
+    const dateFromNow = moment(date, "YYYY-MM-DD HH:mm:ss").fromNow();
+
+    const {
+      default: defaultSize = { url: "https://picsum.photos/200" },
+      medium = { url: "https://picsum.photos/500" },
+      high = { url: "https://picsum.photos/700" },
+    } = media;
+
+    return {
+      key: `video-${key}-${id}`,
+      id,
+      title: purgeHtml(title),
+      description,
+      date: dateFromNow,
+      media: { defaultSize, medium, high },
+    };
+  }
+
   prepareVideo(video = {}, key = 0) {
     const itemCount = dotProp.get(video, "contentDetails.itemCount", 0);
 
@@ -69,6 +114,10 @@ class YoutubeVideoListClass extends React.Component<any> {
     return videos[0].items
       .map((video) => this.prepareVideo(video, key))
       .filter((v: any) => v !== null);
+  }
+  prepareLatestVideos(videos: any[], key = 0) {
+    if (!videos || videos.length === 0) return [];
+    return videos[0].items.map((video) => this.prepareLatestVideo(video, key));
   }
 
   render() {

@@ -106,7 +106,7 @@ const AppNavigator = () => (
       }}
     />
     <Tab.Screen
-      name="Live"
+      name="Radio"
       component={RadioChannelScreen}
       options={{
         tabBarIcon: ({ focused, size }) => (
@@ -169,7 +169,7 @@ const VideoNavigator = () => (
     <Stack.Screen
       name="VideoScreen"
       component={VideoScreen}
-      options={{ title: "Our Playlists" }}
+      options={{ title: "Videos" }}
     />
     <Stack.Screen
       name="VideosScreen"

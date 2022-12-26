@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "von-mobile",
+    "name": "VON Mobile",
     "slug": "von-mobile",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -17,7 +17,7 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.ttebify.vonmobile",
+      "bundleIdentifier": "com.vonmobile",
       "infoPlist": {
         "UIBackgroundModes": ["audio"]
       }
@@ -27,7 +27,9 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.ttebify.vonmobile"
+      "package": "com.vonmobile",
+      "blockedPermissions": ["android.permission.RECORD_AUDIO"],
+      "versionCode": 2
     },
     "web": {
       "favicon": "./assets/favicon.png"

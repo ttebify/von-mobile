@@ -103,7 +103,7 @@ const reducer = (
 
   var oldData: any[] =
     state && state[id] && state[id].data ? state[id].data : [];
-  var halfOldData = oldData.length > 90 ? oldData.slice(0, 50) : oldData;
+  var halfOldData = oldData.length > 80 ? oldData.slice(0, 50) : oldData;
   var oldOffset = state && state[id] && state[id].offset ? state[id].offset : 0;
 
   switch (type) {

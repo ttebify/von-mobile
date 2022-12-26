@@ -77,9 +77,9 @@ const AppbarComp = ({ navigation, route, options }: any) => {
               <Menu.Item
                 onPress={() => {
                   closeMenu();
-                  navigate("Live");
+                  navigate("Radio");
                 }}
-                title="Live"
+                title="Radio"
               />
             </Menu>
           </View>

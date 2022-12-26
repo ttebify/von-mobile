@@ -15,8 +15,8 @@ import InternetConnectionAlert from "react-native-internet-connection-alert";
 export default function App() {
   return (
     <InternetConnectionAlert
-      onChange={(connectionState) => {
-        console.log("Connection State: ", connectionState);
+      onChange={() => {
+        // console.log("Connection State: ", connectionState);
       }}
       type="warn"
     >
