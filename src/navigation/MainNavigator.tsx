@@ -59,9 +59,11 @@ const AppNavigator = () => (
         backgroundColor: "rgb(4, 98, 171)",
       },
       tabBarStyle: {
-        paddingBottom: 10,
+        paddingBottom: 20,
+        marginBottom: 1,
         paddingTop: 10,
-        height: 60,
+        height: 80,
+        marginTop: 0,
       },
       headerTitleStyle: { color: "white" },
       headerLeft: () => (

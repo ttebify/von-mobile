@@ -21,6 +21,11 @@
     "production": {}
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "xandychris@yahoo.com",
+        "ascAppId": "6446593932"
+      }
+    }
   }
 }
